@@ -1,6 +1,7 @@
 package com.mcidlegame.plugin.enemy;
 
 public class Unit {
+	// TODO: write lvl / wave in file
 	private static int lvl = 1;
 	private int hp;
 
