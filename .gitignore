@@ -6,3 +6,4 @@
 
 # Jar file
 *.jar
+/bin/
