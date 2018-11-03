@@ -24,6 +24,7 @@ public class EventListener implements Listener {
 		final Player player = event.getPlayer();
 		player.sendMessage(ChatColor.GREEN + "Welcome.");
 		player.setGameMode(GameMode.ADVENTURE);
+		player.setCollidable(false);
 	}
 
 	@EventHandler

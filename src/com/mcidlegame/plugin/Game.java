@@ -31,8 +31,10 @@ public class Game {
 		}
 		final Zombie zombie = (Zombie) world.spawnEntity(new Location(world, 0.5, 66, 0.5), EntityType.ZOMBIE);
 		zombie.setAI(false);
+		zombie.setCollidable(false);
 		final Snowman snowman = (Snowman) world.spawnEntity(new Location(world, 4.5, 66, 0.5), EntityType.SNOWMAN);
 		snowman.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 30));
+		snowman.setCollidable(false);
 		snowman.setTarget(zombie);
 
 		healthbar = Bukkit.createBossBar("Zombie Health", BarColor.RED, BarStyle.SEGMENTED_10);
