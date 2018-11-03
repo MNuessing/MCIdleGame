@@ -31,6 +31,7 @@ public class EventListener implements Listener {
 	@EventHandler
 	public void onDamage(final EntityDamageEvent event) {
 		// TODO: listen hit event here
+		event.setCancelled(true);
 	}
 
 	@EventHandler
