@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowman;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -37,8 +38,8 @@ public class EventListener implements Listener {
 		final Entity damager = event.getDamager();
 		if (damager instanceof Player) {
 			damager.sendMessage("You hit the zombie.");
-		} else if (damager instanceof Snowman) {
-			Bukkit.broadcastMessage("The snowman hit the zombie.");
+		} else if (damager instanceof Projectile && ((Projectile) damager).getShooter() instanceof Snowman) {
+			Bukkit.broadcastMessage("The snowman indirectly hit the zombie.");
 		} else {
 			Bukkit.broadcastMessage("The " + damager.getClass().getName() + " hit the zombie.");
 		}
