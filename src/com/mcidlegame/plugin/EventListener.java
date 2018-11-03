@@ -2,6 +2,7 @@ package com.mcidlegame.plugin;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,6 +12,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 
 public class EventListener implements Listener {
 
@@ -42,6 +44,15 @@ public class EventListener implements Listener {
 	@EventHandler
 	public void onWeather(final WeatherChangeEvent event) {
 		event.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onChunkLoad(final ChunkLoadEvent event) {
+		for (final Entity entity : event.getChunk().getEntities()) {
+			if (!(entity instanceof Player)) {
+				entity.remove();
+			}
+		}
 	}
 
 }
