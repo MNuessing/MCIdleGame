@@ -45,6 +45,8 @@ public class EventListener implements Listener {
 			Bukkit.broadcastMessage("The " + damager.getClass().getName() + " hit the zombie.");
 		}
 		// TODO: listen hit event here
+		Game.updateHealthBar(Game.getEnemyUnit().hit(Game.getFriendUnit().hit()));
+
 		event.setCancelled(true);
 	}
 
