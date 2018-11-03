@@ -1,5 +1,7 @@
 package com.mcidlegame.plugin.enemy;
 
+import java.util.function.IntUnaryOperator;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.boss.BarColor;
@@ -13,6 +15,9 @@ import com.mcidlegame.plugin.Game;
 import com.mcidlegame.plugin.Main;
 
 public abstract class EnemyUnit {
+
+	// TODO: find an appropriate growth value
+	private static final IntUnaryOperator healthGrowth = n -> (n * (n + 1)) / 2;
 	// TODO: write lvl / wave in file
 	private final LivingEntity entity;
 	private final int level;
@@ -23,8 +28,7 @@ public abstract class EnemyUnit {
 	public EnemyUnit(final LivingEntity entity, final int level, final double healthModifier) {
 		this.entity = entity;
 		this.level = level;
-		// TODO: this grows too fast
-		this.maxHealth = this.health = (int) (level * level * healthModifier);
+		this.maxHealth = this.health = (int) (healthGrowth.applyAsInt(level) * healthModifier);
 		this.healthbar = Bukkit.createBossBar("Monster level " + level, BarColor.RED, BarStyle.SEGMENTED_10);
 
 		// TODO: do this differently
@@ -35,8 +39,9 @@ public abstract class EnemyUnit {
 
 	public void hit(final int damage) {
 		this.health -= damage;
-		this.healthbar.setProgress((1.0 / this.maxHealth) * this.health);
-		if (this.health <= 0) {
+		if (this.health > 0) {
+			this.healthbar.setProgress((1.0 / this.maxHealth) * this.health);
+		} else {
 			die();
 		}
 	}
