@@ -23,6 +23,7 @@ public class enemyUnit {
 		if (enemyUnit.hp > 0) {
 			return false;
 		}
+		increaseLvl();
 		return true;
 	}
 }
