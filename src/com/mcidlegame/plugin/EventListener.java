@@ -39,6 +39,8 @@ public class EventListener implements Listener {
 			damager.sendMessage("You hit the zombie.");
 		} else if (damager instanceof Snowman) {
 			Bukkit.broadcastMessage("The snowman hit the zombie.");
+		} else {
+			Bukkit.broadcastMessage("The " + damager.getClass().getName() + " hit the zombie.");
 		}
 		// TODO: listen hit event here
 		event.setCancelled(true);
