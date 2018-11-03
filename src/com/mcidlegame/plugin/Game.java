@@ -14,10 +14,15 @@ import org.bukkit.entity.Zombie;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import com.mcidlegame.plugin.enemy.EnemyUnit;
+import com.mcidlegame.plugin.friend.FriendUnit;
+
 public class Game {
 
 	private static BossBar healthbar = null;
 	private static int health = 100;
+	private static EnemyUnit enemy = new EnemyUnit();
+	private static FriendUnit friend = new FriendUnit();
 
 	public static void spawnMonster() {
 		if (healthbar != null) {
@@ -31,14 +36,28 @@ public class Game {
 		}
 		final Zombie zombie = (Zombie) world.spawnEntity(new Location(world, 0.5, 66, 0.5), EntityType.ZOMBIE);
 		zombie.setAI(false);
+		enemy = new EnemyUnit();
 		final Snowman snowman = (Snowman) world.spawnEntity(new Location(world, 4.5, 66, 0.5), EntityType.SNOWMAN);
 		snowman.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 30));
 		snowman.setTarget(zombie);
+		friend = new FriendUnit();
 
 		healthbar = Bukkit.createBossBar("Zombie Health", BarColor.RED, BarStyle.SEGMENTED_10);
 		for (final Player player : Bukkit.getOnlinePlayers()) {
 			healthbar.addPlayer(player);
 		}
+	}
+
+	public static EnemyUnit getEnemyUnit() {
+		return enemy;
+	}
+
+	public static FriendUnit getFriendUnit() {
+		return friend;
+	}
+
+	public static void updateHealthBar(final int health) {
+		healthbar.setProgress(1.0 / 100 * health);
 	}
 
 	public static void hit() {

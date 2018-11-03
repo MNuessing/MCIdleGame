@@ -1,11 +1,11 @@
 package com.mcidlegame.plugin.friend;
 
-public class friendUnit {
+public class FriendUnit {
 	// TODO: write lvl / wave in file
 	private static int lvl = 1;
 	private static int damage;
 
-	friendUnit() {
+	public FriendUnit() {
 		calculateDamage();
 	}
 

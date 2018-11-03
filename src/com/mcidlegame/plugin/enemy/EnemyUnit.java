@@ -1,11 +1,11 @@
 package com.mcidlegame.plugin.enemy;
 
-public class enemyUnit {
+public class EnemyUnit {
 	// TODO: write lvl / wave in file
 	private static int lvl = 1;
 	private static int hp;
 
-	enemyUnit() {
+	public EnemyUnit() {
 		calculateHp();
 	}
 
@@ -18,12 +18,12 @@ public class enemyUnit {
 		hp = lvl ^ 2;
 	}
 
-	public boolean hit(final int dmg) {
-		enemyUnit.hp -= dmg;
-		if (enemyUnit.hp > 0) {
-			return false;
+	public int hit(final int dmg) {
+		hp -= dmg;
+		if (EnemyUnit.hp <= 0) {
+			increaseLvl();
+			return 0;
 		}
-		increaseLvl();
-		return true;
+		return hp;
 	}
 }
