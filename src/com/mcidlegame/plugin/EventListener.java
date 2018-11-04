@@ -20,9 +20,10 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
 
-import com.mcidlegame.plugin.enemy.EnemyUnit;
-import com.mcidlegame.plugin.friend.AllyUnit;
-import com.mcidlegame.plugin.friend.PlayerUnit;
+import com.mcidlegame.plugin.units.Unit;
+import com.mcidlegame.plugin.units.enemy.EnemyUnit;
+import com.mcidlegame.plugin.units.friend.AllyUnit;
+import com.mcidlegame.plugin.units.friend.PlayerUnit;
 
 public class EventListener implements Listener {
 
@@ -46,38 +47,42 @@ public class EventListener implements Listener {
 	public void onDamage(final EntityDamageByEntityEvent event) {
 		event.setCancelled(true);
 
-		EnemyUnit enemy = null;
-		for (final MetadataValue value : event.getEntity().getMetadata("enemyUnit")) {
-			if (value.getOwningPlugin() == Main.main) {
-				enemy = (EnemyUnit) value.value();
-			}
-		}
+		final EnemyUnit enemy = (EnemyUnit) getUnitIfEntityIsFromType(event.getEntity(), EnemyUnit.roleString);
 		if (enemy == null) {
 			return;
 		}
 
+		final Entity damager = getDamager(event);
+		final AllyUnit ally = (AllyUnit) getUnitIfEntityIsFromType(damager, AllyUnit.roleString);
+		if (ally == null) {
+			return;
+		}
+
+		enemy.hit(ally.getDamage());
+	}
+
+	private Entity getDamager(final EntityDamageByEntityEvent event) {
 		Entity damager = event.getDamager();
 		if (damager instanceof Projectile) {
 			final ProjectileSource source = ((Projectile) damager).getShooter();
 			if (source instanceof Entity) {
 				damager = (Entity) source;
 			} else {
-				// TODO: maybe enable support for Dispenser as allies
-				return;
+				// TODO: maybe enable support for Dispenser as allies / if so refactor this
+				return null;
 			}
 		}
+		return damager;
+	}
 
-		AllyUnit ally = null;
-		for (final MetadataValue value : damager.getMetadata("allyUnit")) {
+	private Unit getUnitIfEntityIsFromType(final Entity entity, final String type) {
+		Unit enemy = null;
+		for (final MetadataValue value : entity.getMetadata(type)) {
 			if (value.getOwningPlugin() == Main.main) {
-				ally = (AllyUnit) value.value();
+				enemy = (Unit) value.value();
 			}
 		}
-		if (ally == null) {
-			return;
-		}
-
-		enemy.hit(ally.getDamage());
+		return enemy;
 	}
 
 	@EventHandler

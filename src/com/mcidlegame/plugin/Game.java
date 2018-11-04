@@ -18,9 +18,10 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.mcidlegame.plugin.enemy.EnemyUnit;
-import com.mcidlegame.plugin.enemy.ZombieUnit;
-import com.mcidlegame.plugin.friend.SnowmanUnit;
+import com.mcidlegame.plugin.units.enemy.EnemyUnit;
+import com.mcidlegame.plugin.units.enemy.ZombieUnit;
+import com.mcidlegame.plugin.units.friend.AllyUnit;
+import com.mcidlegame.plugin.units.friend.SnowmanUnit;
 
 public class Game {
 
@@ -41,7 +42,7 @@ public class Game {
 		final Snowman snowman = (Snowman) world.spawnEntity(new Location(world, 4.5, 66, 0.5), EntityType.SNOWMAN);
 		snowman.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 30));
 		snowman.setCollidable(false);
-		snowman.setMetadata("allyUnit", new FixedMetadataValue(Main.main, new SnowmanUnit(1)));
+		snowman.setMetadata(AllyUnit.roleString, new FixedMetadataValue(Main.main, new SnowmanUnit(1)));
 		allies.add(snowman);
 
 	}
@@ -52,7 +53,7 @@ public class Game {
 		}
 		final Zombie zombie = (Zombie) location.getWorld().spawnEntity(location, EntityType.ZOMBIE);
 		zombie.setAI(false);
-		zombie.setMetadata("enemyUnit", new FixedMetadataValue(Main.main, new ZombieUnit(zombie, level)));
+		zombie.setMetadata(EnemyUnit.roleString, new FixedMetadataValue(Main.main, new ZombieUnit(zombie, level)));
 		monster = zombie;
 		for (final LivingEntity ally : allies) {
 			if (ally instanceof Creature) {
@@ -73,7 +74,7 @@ public class Game {
 		}
 
 		EnemyUnit enemy = null;
-		for (final MetadataValue value : monster.getMetadata("enemyUnit")) {
+		for (final MetadataValue value : monster.getMetadata(EnemyUnit.roleString)) {
 			if (value.getOwningPlugin() == Main.main) {
 				enemy = (EnemyUnit) value.value();
 			}

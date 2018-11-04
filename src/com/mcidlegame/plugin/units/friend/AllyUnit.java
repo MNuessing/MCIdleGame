@@ -1,8 +1,12 @@
-package com.mcidlegame.plugin.friend;
+package com.mcidlegame.plugin.units.friend;
 
 import java.util.function.IntUnaryOperator;
 
-public abstract class AllyUnit {
+import com.mcidlegame.plugin.units.Unit;
+
+public abstract class AllyUnit extends Unit {
+
+	public static final String roleString = "allyUnit";
 	// TODO: find an appropriate growth value
 	private static final IntUnaryOperator damageGrowth = n -> n;
 	// TODO: write lvl / wave in file

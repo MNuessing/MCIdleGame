@@ -1,4 +1,4 @@
-package com.mcidlegame.plugin.enemy;
+package com.mcidlegame.plugin.units.enemy;
 
 import org.bukkit.entity.Zombie;
 

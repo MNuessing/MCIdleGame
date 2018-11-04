@@ -1,4 +1,4 @@
-package com.mcidlegame.plugin.enemy;
+package com.mcidlegame.plugin.units.enemy;
 
 import java.util.function.IntUnaryOperator;
 
@@ -13,9 +13,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.mcidlegame.plugin.Game;
 import com.mcidlegame.plugin.Main;
+import com.mcidlegame.plugin.units.Unit;
 
-public abstract class EnemyUnit {
+public abstract class EnemyUnit extends Unit {
 
+	public static final String roleString = "enemyUnit";
 	// TODO: find an appropriate growth value
 	private static final IntUnaryOperator healthGrowth = n -> (n * (n + 1)) / 2;
 	// TODO: write lvl / wave in file

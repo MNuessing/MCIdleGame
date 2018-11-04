@@ -1,4 +1,4 @@
-package com.mcidlegame.plugin.friend;
+package com.mcidlegame.plugin.units.friend;
 
 public class PlayerUnit extends AllyUnit {
 
