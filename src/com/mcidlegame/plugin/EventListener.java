@@ -33,7 +33,7 @@ public class EventListener implements Listener {
 		player.sendMessage(ChatColor.GREEN + "Welcome.");
 		player.setGameMode(GameMode.ADVENTURE);
 		player.setCollidable(false);
-		player.setMetadata("allyUnit", new FixedMetadataValue(Main.main, new PlayerUnit(1)));
+		player.setMetadata(AllyUnit.roleString, new FixedMetadataValue(Main.main, new PlayerUnit(1)));
 	}
 
 	@EventHandler
