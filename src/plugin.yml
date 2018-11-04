@@ -7,6 +7,6 @@ commands:
   test:
     description: Tests stuff.
     usage: /<command>
-  start:
-    description: Starts monster spawning.
+  core:
+    description: Teleports you to the core room.
     usage: /<command>

@@ -1,7 +1,11 @@
 package com.mcidlegame.plugin;
 
+import java.util.Collections;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -16,6 +20,8 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
@@ -33,7 +39,29 @@ public class EventListener implements Listener {
 		player.sendMessage(ChatColor.GREEN + "Welcome.");
 		player.setGameMode(GameMode.ADVENTURE);
 		player.setCollidable(false);
-		player.setMetadata(AllyUnit.roleString, new FixedMetadataValue(Main.main, new PlayerUnit(1)));
+		WorldManager.enterWorld(player, Bukkit.getWorld("world"));
+
+		// TODO: maybe do this differently, maybe not
+		if (player.getLevel() == 0) {
+			player.setLevel(1);
+
+			final ItemStack spawner = new ItemStack(Material.SKULL_ITEM, 1, (byte) 2);
+			final ItemMeta spawnerMeta = spawner.getItemMeta();
+			spawnerMeta.setDisplayName("Zombie Spawner");
+			spawnerMeta.setLore(Collections.singletonList("Level: 1"));
+			spawner.setItemMeta(spawnerMeta);
+
+			final ItemStack ally = new ItemStack(Material.SNOW_BLOCK);
+			final ItemMeta allyMeta = ally.getItemMeta();
+			allyMeta.setDisplayName("Snowman");
+			allyMeta.setLore(Collections.singletonList("Level: 1"));
+			ally.setItemMeta(allyMeta);
+
+			player.getInventory().addItem(spawner);
+			player.getInventory().addItem(ally);
+		}
+
+		player.setMetadata(AllyUnit.roleString, new FixedMetadataValue(Main.main, new PlayerUnit(player.getLevel())));
 	}
 
 	@EventHandler

@@ -1,11 +1,11 @@
 package com.mcidlegame.plugin;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
+import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Main extends JavaPlugin {
@@ -28,23 +28,22 @@ public class Main extends JavaPlugin {
 			final String[] args) {
 
 		if (label.equals("test")) {
+
 			final World world = Bukkit.getWorld("world");
-			for (int x = -9; x < 11; x++) {
-				for (int y = 64; y < 72; y++) {
-					for (int z = -9; z < 11; z++) {
-						final Block block = world.getBlockAt(x, y, z);
-						if (block.getType() != Material.AIR) {
-							sender.sendMessage(block.getType() + " " + block.getData());
-						}
-					}
-				}
-			}
+			final Location location = world.getSpawnLocation();
+			sender.sendMessage(location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ());
 
 			return true;
 		}
 
-		if (label.equals("start")) {
-			Game.startGame();
+		if (label.equals("core")) {
+			if (!(sender instanceof Player)) {
+				sender.sendMessage("The console cannot move.");
+				return true;
+			}
+			final Player player = (Player) sender;
+			final World world = player.getWorld();
+			player.teleport(new Location(world, 4, 65, 4));
 			return true;
 		}
 		return false;

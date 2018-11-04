@@ -11,17 +11,12 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowman;
 import org.bukkit.entity.Zombie;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import com.mcidlegame.plugin.units.enemy.EnemyUnit;
 import com.mcidlegame.plugin.units.enemy.ZombieUnit;
-import com.mcidlegame.plugin.units.friend.AllyUnit;
-import com.mcidlegame.plugin.units.friend.SnowmanUnit;
 
 public class Game {
 
@@ -37,16 +32,17 @@ public class Game {
 			}
 		}
 
-		final Snowman snowman = (Snowman) world.spawnEntity(new Location(world, 4.5, 66, 0.5), EntityType.SNOWMAN);
-		snowman.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 30));
-		snowman.setCollidable(false);
-		snowman.setMetadata(AllyUnit.roleString, new FixedMetadataValue(Main.main, new SnowmanUnit(1)));
-		allies.add(snowman);
-
-		snowman.setCustomName("Snowman");
-		snowman.setCustomNameVisible(true);
-
-		spawnMonster(new Location(world, 0.5, 66, 0.5), 1);
+		/*
+		 * final Snowman snowman = (Snowman) world.spawnEntity(new Location(world, 4.5,
+		 * 66, 0.5), EntityType.SNOWMAN); snowman.addPotionEffect(new
+		 * PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 30));
+		 * snowman.setCollidable(false); snowman.setMetadata(AllyUnit.roleString, new
+		 * FixedMetadataValue(Main.main, new SnowmanUnit(1))); allies.add(snowman);
+		 * 
+		 * snowman.setCustomName("Snowman"); snowman.setCustomNameVisible(true);
+		 * 
+		 * spawnMonster(new Location(world, 0.5, 66, 0.5), 1);
+		 */
 
 	}
 
