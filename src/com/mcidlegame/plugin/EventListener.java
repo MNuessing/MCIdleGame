@@ -67,10 +67,12 @@ public class EventListener implements Listener {
 			final ProjectileSource source = ((Projectile) damager).getShooter();
 			if (source instanceof Entity) {
 				return (Entity) source;
+			} else {
+				// TODO: maybe enable support for Dispenser as allies / if so refactor this
+				return null;
 			}
-			// TODO: maybe enable support for Dispenser as allies / if so refactor this
 		}
-		return null;
+		return damager;
 	}
 
 	private Unit getUnitIfEntityIsFromType(final Entity entity, final String type) {
