@@ -1,6 +1,7 @@
 main: com.mcidlegame.plugin.Main
 version: 1.0
 name: MCIdleGame
+load: STARTUP
 authors: [PapstSalami, Skitskurr]
 
 commands:
