@@ -31,7 +31,7 @@ public abstract class EnemyUnit extends Unit {
 		this.entity = entity;
 		this.level = level;
 		this.maxHealth = this.health = (int) (healthGrowth.applyAsInt(level) * healthModifier);
-		this.healthbar = Bukkit.createBossBar("Monster level " + level, BarColor.RED, BarStyle.SEGMENTED_10);
+		this.healthbar = Bukkit.createBossBar("Health: " + this.health, BarColor.RED, BarStyle.SEGMENTED_10);
 
 		// TODO: do this differently
 		for (final Player player : Bukkit.getOnlinePlayers()) {
@@ -42,6 +42,7 @@ public abstract class EnemyUnit extends Unit {
 	public void hit(final int damage) {
 		this.health -= damage;
 		if (this.health > 0) {
+			this.healthbar.setTitle("Health: " + this.health);
 			this.healthbar.setProgress((1.0 / this.maxHealth) * this.health);
 		} else {
 			die();

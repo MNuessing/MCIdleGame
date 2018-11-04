@@ -43,6 +43,9 @@ public class Game {
 		snowman.setMetadata(AllyUnit.roleString, new FixedMetadataValue(Main.main, new SnowmanUnit(1)));
 		allies.add(snowman);
 
+		snowman.setCustomName("Snowman");
+		snowman.setCustomNameVisible(true);
+
 		spawnMonster(new Location(world, 0.5, 66, 0.5), 1);
 
 	}
@@ -53,6 +56,8 @@ public class Game {
 		}
 		final Zombie zombie = (Zombie) location.getWorld().spawnEntity(location, EntityType.ZOMBIE);
 		zombie.setAI(false);
+		zombie.setCustomName("Zombie level: " + level);
+		zombie.setCustomNameVisible(true);
 		zombie.setMetadata(EnemyUnit.roleString, new FixedMetadataValue(Main.main, new ZombieUnit(zombie, level)));
 		monster = zombie;
 		for (final LivingEntity ally : allies) {

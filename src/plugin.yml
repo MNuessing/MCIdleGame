@@ -4,6 +4,9 @@ name: MCIdleGame
 authors: [PapstSalami, Skitskurr]
 
 commands:
+  test:
+    description: Tests stuff.
+    usage: /<command>
   start:
     description: Starts monster spawning.
     usage: /<command>
