@@ -62,27 +62,24 @@ public class EventListener implements Listener {
 	}
 
 	private Entity getDamager(final EntityDamageByEntityEvent event) {
-		Entity damager = event.getDamager();
+		final Entity damager = event.getDamager();
 		if (damager instanceof Projectile) {
 			final ProjectileSource source = ((Projectile) damager).getShooter();
 			if (source instanceof Entity) {
-				damager = (Entity) source;
-			} else {
-				// TODO: maybe enable support for Dispenser as allies / if so refactor this
-				return null;
+				return (Entity) source;
 			}
+			// TODO: maybe enable support for Dispenser as allies / if so refactor this
 		}
-		return damager;
+		return null;
 	}
 
 	private Unit getUnitIfEntityIsFromType(final Entity entity, final String type) {
-		Unit enemy = null;
 		for (final MetadataValue value : entity.getMetadata(type)) {
 			if (value.getOwningPlugin() == Main.main) {
-				enemy = (Unit) value.value();
+				return (Unit) value.value();
 			}
 		}
-		return enemy;
+		return null;
 	}
 
 	@EventHandler
