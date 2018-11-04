@@ -37,13 +37,13 @@ public class Game {
 			}
 		}
 
-		spawnMonster(new Location(world, 0.5, 66, 0.5), 1);
-
 		final Snowman snowman = (Snowman) world.spawnEntity(new Location(world, 4.5, 66, 0.5), EntityType.SNOWMAN);
 		snowman.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, Integer.MAX_VALUE, 30));
 		snowman.setCollidable(false);
 		snowman.setMetadata(AllyUnit.roleString, new FixedMetadataValue(Main.main, new SnowmanUnit(1)));
 		allies.add(snowman);
+
+		spawnMonster(new Location(world, 0.5, 66, 0.5), 1);
 
 	}
 
