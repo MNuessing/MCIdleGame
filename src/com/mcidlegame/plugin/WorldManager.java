@@ -76,4 +76,11 @@ public class WorldManager {
 		player.teleport(new Location(world, 4, 65, 4));
 	}
 
+	public static String getCommandStringOfCommandBlock(final Block block) {
+		if (!(block instanceof CommandBlock)) {
+			return "";
+		}
+		final CommandBlock commandBlock = (CommandBlock) block.getState();
+		return commandBlock.getCommand();
+	}
 }
