@@ -86,8 +86,8 @@ public class WorldManager {
 		state.update();
 	}
 
-	public static String getCommandStringOfCommandBlock(final Block block) {
-		if (!(block instanceof CommandBlock)) {
+	public static String getCommandString(final Block block) {
+		if (block == null) {
 			return "";
 		}
 		final CommandBlock commandBlock = (CommandBlock) block.getState();

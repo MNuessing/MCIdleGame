@@ -7,7 +7,6 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.CommandBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -37,11 +36,11 @@ public class RoomData {
 		}
 
 		final Block block = chunk.getBlock(8, 64, 8);
-		if (block.getType() != Material.COMMAND) {
+		if (block == null || block.getType() != Material.COMMAND) {
 			return;
 		}
 
-		if (WorldManager.getCommandStringOfCommandBlock(block).equals("blocked")) {
+		if (WorldManager.getCommandString(block).equals("blocked")) {
 			return;
 		}
 
@@ -56,7 +55,7 @@ public class RoomData {
 		rooms.remove(chunk);
 	}
 
-	public RoomData(final Chunk chunk) {
+	private RoomData(final Chunk chunk) {
 		this.chunk = chunk;
 		chunk.getBlock(8, 64, 8).setMetadata(metaString, new FixedMetadataValue(Main.main, this));
 		rooms.put(chunk, this);
@@ -64,10 +63,9 @@ public class RoomData {
 		setup();
 	}
 
-	public void setup() {
+	private void setup() {
 		final Block targetBlock = this.chunk.getBlock(8, 64, 8);
-		final CommandBlock targetState = (CommandBlock) targetBlock.getState();
-		final String targetLine = targetState.getCommand();
+		final String targetLine = WorldManager.getCommandString(targetBlock);
 		if (!targetLine.equals("")) {
 			final Location targetSpawn = this.chunk.getBlock(8, 66, 8).getLocation().add(0.5, 0, 0.5);
 			this.target = EnemyUnit.fromString(targetLine, targetSpawn, () -> onKill());
@@ -75,14 +73,12 @@ public class RoomData {
 
 		for (final Slot slot : Slot.values()) {
 			final Block block = slot.getBlock(this.chunk);
-			final CommandBlock state = (CommandBlock) block.getState();
-			final String line = state.getCommand();
+			final String line = WorldManager.getCommandString(block);
 			if (!line.equals("")) {
-				this.allies.put(slot, AllyUnit.fromString(line, slot.getSpawnLocation(this.chunk)));
+				final AllyUnit ally = AllyUnit.fromString(line, slot.getSpawnLocation(this.chunk));
+				this.allies.put(slot, ally);
+				ally.spawn();
 			}
-		}
-		for (final AllyUnit ally : this.allies.values()) {
-			ally.spawn();
 		}
 		this.target.spawn();
 		startShooting();
