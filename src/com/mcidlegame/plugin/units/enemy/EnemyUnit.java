@@ -7,35 +7,50 @@ import org.bukkit.Location;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.metadata.FixedMetadataValue;
 
-import com.mcidlegame.plugin.Game;
 import com.mcidlegame.plugin.Main;
 import com.mcidlegame.plugin.units.Unit;
 
 public abstract class EnemyUnit extends Unit {
 
-	public static final String roleString = "enemyUnit";
+	public static final String metaString = "enemyUnit";
 	// TODO: find an appropriate growth value
 	private static final IntUnaryOperator healthGrowth = n -> (n * (n + 1)) / 2;
 	// TODO: write lvl / wave in file
-	private final LivingEntity entity;
-	private final int level;
 	private final int maxHealth;
+	private final Runnable deathHandler;
+	private LivingEntity entity;
 	private int health;
-	private final BossBar healthbar;
+	private BossBar healthbar;
 
-	public EnemyUnit(final LivingEntity entity, final int level, final double healthModifier) {
-		this.entity = entity;
-		this.level = level;
+	public EnemyUnit(final String name, final EntityType type, final Location location, final int level,
+			final double healthModifier, final Runnable deathHandler) {
+		super(name, type, location, level);
+		this.deathHandler = deathHandler;
 		this.maxHealth = this.health = (int) (healthGrowth.applyAsInt(level) * healthModifier);
 		this.healthbar = Bukkit.createBossBar("Health: " + this.health, BarColor.RED, BarStyle.SEGMENTED_10);
+	}
 
-		// TODO: do this differently
-		for (final Player player : Bukkit.getOnlinePlayers()) {
-			this.healthbar.addPlayer(player);
+	@Override
+	protected void onSpawn() {
+		this.entity.setMetadata(metaString, new FixedMetadataValue(Main.main, this));
+		this.healthbar = Bukkit.createBossBar("Health: " + this.health, BarColor.RED, BarStyle.SEGMENTED_10);
+		for (final Entity nearby : this.entity.getNearbyEntities(6, 6, 6)) {
+			if (nearby instanceof Player) {
+				this.healthbar.addPlayer((Player) nearby);
+			}
+		}
+	}
+
+	@Override
+	protected void onRemove() {
+		if (!this.entity.isDead()) {
+			removeHealthbar();
 		}
 	}
 
@@ -53,19 +68,21 @@ public abstract class EnemyUnit extends Unit {
 		this.healthbar.addPlayer(player);
 	}
 
+	public void removeHealthbar(final Player player) {
+		this.healthbar.removePlayer(player);
+	}
+
 	public void removeHealthbar() {
 		this.healthbar.removeAll();
 	}
 
 	private void die() {
 		this.entity.setHealth(0);
-		this.healthbar.removeAll();
+		removeHealthbar();
+		this.deathHandler.run();
+	}
 
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				Game.spawnMonster(new Location(Bukkit.getWorld("world"), 0.5, 66, 0.5), EnemyUnit.this.level + 1);
-			}
-		}.runTaskLater(Main.main, 20L);
+	public boolean isDead() {
+		return this.entity.isDead();
 	}
 }

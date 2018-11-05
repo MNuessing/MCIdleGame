@@ -4,6 +4,7 @@ import java.util.Collections;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -20,15 +21,16 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
 
-import com.mcidlegame.plugin.units.Unit;
+import com.mcidlegame.plugin.data.RoomData;
+import com.mcidlegame.plugin.units.Damager;
 import com.mcidlegame.plugin.units.enemy.EnemyUnit;
-import com.mcidlegame.plugin.units.friend.AllyUnit;
 import com.mcidlegame.plugin.units.friend.PlayerUnit;
 
 public class EventListener implements Listener {
@@ -61,7 +63,7 @@ public class EventListener implements Listener {
 			player.getInventory().addItem(ally);
 		}
 
-		player.setMetadata(AllyUnit.roleString, new FixedMetadataValue(Main.main, new PlayerUnit(player.getLevel())));
+		player.setMetadata(Damager.metaString, new FixedMetadataValue(Main.main, new PlayerUnit(player.getLevel())));
 	}
 
 	@EventHandler
@@ -75,18 +77,18 @@ public class EventListener implements Listener {
 	public void onDamage(final EntityDamageByEntityEvent event) {
 		event.setCancelled(true);
 
-		final EnemyUnit enemy = (EnemyUnit) getUnitIfEntityIsFromType(event.getEntity(), EnemyUnit.roleString);
+		final EnemyUnit enemy = (EnemyUnit) getMetadataValue(event.getEntity(), EnemyUnit.metaString);
 		if (enemy == null) {
 			return;
 		}
 
-		final Entity damager = getDamager(event);
-		final AllyUnit ally = (AllyUnit) getUnitIfEntityIsFromType(damager, AllyUnit.roleString);
-		if (ally == null) {
+		final Entity attacker = getDamager(event);
+		final Damager damager = (Damager) getMetadataValue(attacker, Damager.metaString);
+		if (damager == null) {
 			return;
 		}
 
-		enemy.hit(ally.getDamage());
+		enemy.hit(damager.getDamage());
 	}
 
 	private Entity getDamager(final EntityDamageByEntityEvent event) {
@@ -103,10 +105,10 @@ public class EventListener implements Listener {
 		return damager;
 	}
 
-	private Unit getUnitIfEntityIsFromType(final Entity entity, final String type) {
+	private Object getMetadataValue(final Entity entity, final String type) {
 		for (final MetadataValue value : entity.getMetadata(type)) {
 			if (value.getOwningPlugin() == Main.main) {
-				return (Unit) value.value();
+				return value.value();
 			}
 		}
 		return null;
@@ -136,11 +138,18 @@ public class EventListener implements Listener {
 
 	@EventHandler
 	public void onChunkLoad(final ChunkLoadEvent event) {
-		for (final Entity entity : event.getChunk().getEntities()) {
+		final Chunk chunk = event.getChunk();
+		for (final Entity entity : chunk.getEntities()) {
 			if (!(entity instanceof Player)) {
 				entity.remove();
 			}
 		}
+		RoomData.checkChunk(chunk);
+	}
+
+	@EventHandler
+	public void onChunkOnload(final ChunkUnloadEvent event) {
+		RoomData.unloadRoom(event.getChunk());
 	}
 
 }

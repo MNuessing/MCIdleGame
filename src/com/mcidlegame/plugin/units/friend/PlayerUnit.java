@@ -1,9 +1,24 @@
 package com.mcidlegame.plugin.units.friend;
 
-public class PlayerUnit extends AllyUnit {
+import java.util.function.IntUnaryOperator;
+
+import com.mcidlegame.plugin.units.Damager;
+
+public class PlayerUnit implements Damager {
+
+	private static final IntUnaryOperator damageGrowth = n -> 2 * n;
+
+	private final int level;
+	private final int damage;
 
 	public PlayerUnit(final int level) {
-		super(level, 2.0);
+		this.level = level;
+		this.damage = (damageGrowth.applyAsInt(level));
+	}
+
+	@Override
+	public int getDamage() {
+		return this.damage;
 	}
 
 }

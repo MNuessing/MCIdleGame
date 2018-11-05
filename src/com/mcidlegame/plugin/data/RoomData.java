@@ -1,0 +1,198 @@
+package com.mcidlegame.plugin.data;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.CommandBlock;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+
+import com.mcidlegame.plugin.Main;
+import com.mcidlegame.plugin.units.enemy.EnemyUnit;
+import com.mcidlegame.plugin.units.enemy.ZombieUnit;
+import com.mcidlegame.plugin.units.friend.AllyUnit;
+import com.mcidlegame.plugin.units.friend.ShooterUnit;
+import com.mcidlegame.plugin.units.friend.SnowmanUnit;
+
+public class RoomData {
+
+	public enum Slot {
+		NORTH(11, 8, 180f), EAST(8, 11, -90f), SOUTH(5, 8, 0f), WEST(8, 5, 90f);
+
+		private final int x;
+		private final int z;
+		private final float pitch;
+
+		private Slot(final int x, final int z, final float pitch) {
+			this.x = x;
+			this.z = z;
+			this.pitch = pitch;
+		}
+
+		private Block getBlock(final Chunk chunk) {
+			return chunk.getBlock(this.x, 64, this.z);
+		}
+
+		private Location getSpawnLocation(final Chunk chunk) {
+			final Location location = chunk.getBlock(this.x, 66, this.z).getLocation().add(0.5, 0, 0.5);
+			location.setPitch(this.pitch);
+			return location;
+		}
+	}
+
+	public static final String metaString = "room";
+
+	private static final Map<Chunk, RoomData> rooms = new HashMap<>();
+
+	private EnemyUnit target = null;
+	private final Map<Slot, AllyUnit> allies = new HashMap<>();
+	private final Chunk chunk;
+	private BukkitTask respawn;
+
+	public static void checkChunk(final Chunk chunk) {
+		final Block block = chunk.getBlock(8, 64, 8);
+		if (block.getType() != Material.COMMAND) {
+			return;
+		}
+		if (((CommandBlock) block.getState()).getCommand().equals("blocked")) {
+			return;
+		}
+		new RoomData(chunk);
+
+	}
+
+	public static RoomData getRoom(final Chunk chunk) {
+		return rooms.get(chunk);
+	}
+
+	public static void unloadRoom(final Chunk chunk) {
+		rooms.remove(chunk);
+	}
+
+	public RoomData(final Chunk chunk) {
+		this.chunk = chunk;
+		chunk.getBlock(8, 64, 8).setMetadata(metaString, new FixedMetadataValue(Main.main, this));
+		rooms.put(chunk, this);
+
+		setup();
+	}
+
+	public void setup() {
+		final Block targetBlock = this.chunk.getBlock(8, 64, 8);
+		final CommandBlock targetState = (CommandBlock) targetBlock.getState();
+		final String targetLine = targetState.getCommand();
+		if (!targetLine.equals("")) {
+			final Location targetSpawn = this.chunk.getBlock(8, 66, 8).getLocation().add(0.5, 0, 0.5);
+			final String[] args = targetLine.split(";");
+			// TODO: avoid code dublication
+			switch (args[0]) {
+			case "Zombie":
+				this.target = new ZombieUnit(targetSpawn, Integer.parseInt(args[1]), () -> onKill());
+				break;
+			}
+		}
+
+		for (final Slot slot : Slot.values()) {
+			final Block block = slot.getBlock(this.chunk);
+			final CommandBlock state = (CommandBlock) block.getState();
+			final String line = state.getCommand();
+			if (!line.equals("")) {
+				final String[] args = line.split(";");
+				// TODO: avoid code dublication
+				switch (args[0]) {
+				case "Snowman":
+					this.allies.put(slot,
+							new SnowmanUnit(slot.getSpawnLocation(this.chunk), Integer.parseInt(args[1])));
+					break;
+				}
+			}
+		}
+		for (final AllyUnit ally : this.allies.values()) {
+			ally.spawn();
+		}
+		this.target.spawn();
+		startShooting();
+	}
+
+	public void onKill() {
+		stopShooting();
+
+		this.respawn = new BukkitRunnable() {
+			@Override
+			public void run() {
+				if (RoomData.this.target != null) {
+					RoomData.this.target.spawn();
+					startShooting();
+				}
+			}
+		}.runTaskLater(Main.main, 40L);
+	}
+
+	public void startShooting() {
+		for (final AllyUnit ally : this.allies.values()) {
+			if (ally instanceof ShooterUnit) {
+				((ShooterUnit) ally).startShooting();
+			}
+		}
+	}
+
+	public void stopShooting() {
+		for (final AllyUnit ally : this.allies.values()) {
+			if (ally instanceof ShooterUnit) {
+				((ShooterUnit) ally).stopShooting();
+			}
+		}
+	}
+
+	public ItemStack removeTarget() {
+		if (this.respawn != null && !this.respawn.isCancelled()) {
+			this.respawn.cancel();
+		}
+		((CommandBlock) this.chunk.getBlock(8, 64, 4).getState()).setCommand("");
+		stopShooting();
+		this.target.remove();
+		this.target = null;
+		return this.target.toItem();
+	}
+
+	public void setTarget(final String name, final int level) {
+		((CommandBlock) this.chunk.getBlock(8, 64, 8)).setCommand(name + ";" + level);
+		// TODO: avoid code dublication
+		final Location targetSpawn = this.chunk.getBlock(8, 66, 8).getLocation().add(0.5, 0, 0.5);
+		switch (name) {
+		case "Zombie":
+			this.target = new ZombieUnit(targetSpawn, level, () -> onKill());
+			break;
+		}
+		this.target.spawn();
+		startShooting();
+	}
+
+	public ItemStack removeAlly(final Slot slot) {
+		((CommandBlock) slot.getBlock(this.chunk).getState()).setCommand("");
+		final AllyUnit ally = this.allies.get(slot);
+		ally.remove();
+		this.allies.remove(slot);
+		return ally.toItem();
+	}
+
+	public void addAlly(final Slot slot, final String name, final int level) {
+		((CommandBlock) slot.getBlock(this.chunk).getState()).setCommand(name + ";" + level);
+		AllyUnit ally = null;
+		// TODO: avoid code dublication
+		switch (name) {
+		case "Snowman":
+			ally = new SnowmanUnit(slot.getSpawnLocation(this.chunk), level);
+			break;
+		}
+		this.allies.put(slot, ally);
+		ally.spawn();
+	}
+
+}

@@ -1,12 +1,16 @@
 package com.mcidlegame.plugin;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.mcidlegame.plugin.data.RoomData;
 
 public class Main extends JavaPlugin {
 
@@ -16,11 +20,18 @@ public class Main extends JavaPlugin {
 	public void onEnable() {
 		main = this;
 		Bukkit.getPluginManager().registerEvents(new EventListener(), this);
+		for (final Chunk chunk : Bukkit.getWorld("world").getLoadedChunks()) {
+			RoomData.checkChunk(chunk);
+		}
 	}
 
 	@Override
 	public void onDisable() {
-		Game.removeHealthbar();
+		for (final Entity entity : Bukkit.getWorld("world").getEntities()) {
+			if (!(entity instanceof Player)) {
+				entity.remove();
+			}
+		}
 	}
 
 	@Override

@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.CommandBlock;
 import org.bukkit.entity.Player;
 
 public class WorldManager {
@@ -43,6 +44,7 @@ public class WorldManager {
 				}
 			}
 		}
+		((CommandBlock) chunk.getBlock(8, 64, 8).getState()).setCommand("locked");
 	}
 
 	public static void unlockRoom(final Chunk chunk) {
@@ -60,6 +62,7 @@ public class WorldManager {
 				}
 			}
 		}
+		((CommandBlock) chunk.getBlock(8, 64, 8).getState()).setCommand("");
 	}
 
 	public static boolean hasRoom(final Chunk chunk) {
