@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.entity.Player;
 
@@ -74,6 +75,15 @@ public class WorldManager {
 
 	public static void enterWorld(final Player player, final World world) {
 		player.teleport(new Location(world, 4, 65, 4));
+	}
+
+	public static void setCommand(final Block block, final String command) {
+		final BlockState state = block.getState();
+		if (!(state instanceof CommandBlock)) {
+			return;
+		}
+		((CommandBlock) state).setCommand(command);
+		state.update();
 	}
 
 }
