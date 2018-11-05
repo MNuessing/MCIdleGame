@@ -1,8 +1,6 @@
-package com.mcidlegame.plugin.units.friend;
+package com.mcidlegame.plugin.units.ally;
 
 import java.util.function.IntUnaryOperator;
-
-import com.mcidlegame.plugin.units.Damager;
 
 public class PlayerUnit implements Damager {
 

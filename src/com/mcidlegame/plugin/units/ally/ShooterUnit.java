@@ -1,4 +1,4 @@
-package com.mcidlegame.plugin.units.friend;
+package com.mcidlegame.plugin.units.ally;
 
 import java.util.function.IntUnaryOperator;
 
@@ -10,7 +10,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.mcidlegame.plugin.Main;
-import com.mcidlegame.plugin.units.Damager;
 
 public abstract class ShooterUnit extends AllyUnit implements Damager {
 

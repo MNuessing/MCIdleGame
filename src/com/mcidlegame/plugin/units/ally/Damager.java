@@ -1,4 +1,4 @@
-package com.mcidlegame.plugin.units;
+package com.mcidlegame.plugin.units.ally;
 
 public interface Damager {
 

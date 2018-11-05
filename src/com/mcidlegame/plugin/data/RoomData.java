@@ -15,9 +15,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.mcidlegame.plugin.Main;
+import com.mcidlegame.plugin.units.ally.AllyUnit;
+import com.mcidlegame.plugin.units.ally.ShooterUnit;
 import com.mcidlegame.plugin.units.enemy.EnemyUnit;
-import com.mcidlegame.plugin.units.friend.AllyUnit;
-import com.mcidlegame.plugin.units.friend.ShooterUnit;
 
 public class RoomData {
 

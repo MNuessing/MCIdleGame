@@ -30,9 +30,9 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
 
 import com.mcidlegame.plugin.data.RoomData;
-import com.mcidlegame.plugin.units.Damager;
+import com.mcidlegame.plugin.units.ally.Damager;
+import com.mcidlegame.plugin.units.ally.PlayerUnit;
 import com.mcidlegame.plugin.units.enemy.EnemyUnit;
-import com.mcidlegame.plugin.units.friend.PlayerUnit;
 
 public class EventListener implements Listener {
 
