@@ -20,93 +20,94 @@ import com.mcidlegame.plugin.units.Unit;
 
 public abstract class EnemyUnit extends Unit {
 
-	public static final String metaString = "enemyUnit";
-	// TODO: find an appropriate growth value
-	private static final IntUnaryOperator healthGrowth = n -> (n * (n + 1)) / 2;
-	// TODO: write lvl / wave in file
-	private final int maxHealth;
-	private final Runnable deathHandler;
-	private LivingEntity entity;
-	private int health;
-	private BossBar healthbar;
+    public static final String metaString = "enemyUnit";
+    // TODO: find an appropriate growth value
+    private static final IntUnaryOperator healthGrowth = n -> (n * (n + 1)) / 2;
+    // TODO: write lvl / wave in file
+    private final int maxHealth;
+    private final Runnable deathHandler;
+    private LivingEntity entity;
+    private int health;
+    private BossBar healthbar;
 
-	public EnemyUnit(final String name, final EntityType type, final Location location, final int level,
-			final double healthModifier, final Runnable deathHandler) {
-		super(name, type, location, level);
-		this.deathHandler = deathHandler;
-		this.maxHealth = this.health = (int) (healthGrowth.applyAsInt(level) * healthModifier);
-		this.healthbar = Bukkit.createBossBar("Health: " + this.health, BarColor.RED, BarStyle.SEGMENTED_10);
-	}
+    public EnemyUnit(final String name, final EntityType type, final Location location, final int level,
+                     final double healthModifier, final Runnable deathHandler) {
+        super(name, type, location, level);
+        this.deathHandler = deathHandler;
+        this.health = (int) (healthGrowth.applyAsInt(level) * healthModifier);
+        this.maxHealth = this.health;
+        this.healthbar = Bukkit.createBossBar("Health: " + this.health, BarColor.RED, BarStyle.SEGMENTED_10);
+    }
 
-	@Override
-	protected void onSpawn() {
-		this.entity.setMetadata(metaString, new FixedMetadataValue(Main.main, this));
-		this.healthbar = Bukkit.createBossBar("Health: " + this.health, BarColor.RED, BarStyle.SEGMENTED_10);
-		for (final Entity nearby : this.entity.getNearbyEntities(6, 6, 6)) {
-			if (nearby instanceof Player) {
-				this.healthbar.addPlayer((Player) nearby);
-			}
-		}
-	}
+    @Override
+    protected void onSpawn() {
+        this.entity.setMetadata(metaString, new FixedMetadataValue(Main.main, this));
+        this.healthbar = Bukkit.createBossBar("Health: " + this.health, BarColor.RED, BarStyle.SEGMENTED_10);
+        for (final Entity nearby : this.entity.getNearbyEntities(6, 6, 6)) {
+            if (nearby instanceof Player) {
+                this.healthbar.addPlayer((Player) nearby);
+            }
+        }
+    }
 
-	@Override
-	protected void onRemove() {
-		if (!this.entity.isDead()) {
-			removeHealthbar();
-		}
-	}
+    @Override
+    protected void onRemove() {
+        if (!this.entity.isDead()) {
+            removeHealthbar();
+        }
+    }
 
-	public void hit(final int damage) {
-		this.health -= damage;
-		if (this.health > 0) {
-			this.healthbar.setTitle("Health: " + this.health);
-			this.healthbar.setProgress((1.0 / this.maxHealth) * this.health);
-		} else {
-			die();
-		}
-	}
+    public void hit(final int damage) {
+        this.health -= damage;
+        if (this.health > 0) {
+            this.healthbar.setTitle("Health: " + this.health);
+            this.healthbar.setProgress((1.0 / this.maxHealth) * this.health);
+        } else {
+            die();
+        }
+    }
 
-	public void addToHealthbar(final Player player) {
-		this.healthbar.addPlayer(player);
-	}
+    public void addToHealthbar(final Player player) {
+        this.healthbar.addPlayer(player);
+    }
 
-	public void removeHealthbar(final Player player) {
-		this.healthbar.removePlayer(player);
-	}
+    public void removeHealthbar(final Player player) {
+        this.healthbar.removePlayer(player);
+    }
 
-	public void removeHealthbar() {
-		this.healthbar.removeAll();
-	}
+    public void removeHealthbar() {
+        this.healthbar.removeAll();
+    }
 
-	private void die() {
-		this.entity.setHealth(0);
-		removeHealthbar();
-		this.deathHandler.run();
-	}
+    private void die() {
+        this.entity.setHealth(0);
+        removeHealthbar();
+        this.deathHandler.run();
+    }
 
-	public boolean isDead() {
-		return this.entity.isDead();
-	}
+    public boolean isDead() {
+        return this.entity.isDead();
+    }
 
-	public static EnemyUnit fromString(final String line, final Location location, final Runnable deathHandler) {
-		final String[] args = line.split(";");
-		return createUnit(args[0], Integer.parseInt(args[1]), location, deathHandler);
-	}
+    public static EnemyUnit fromString(final String line, final Location location, final Runnable deathHandler) {
+        final String[] args = line.split(";");
+        return createUnit(args[0], Integer.parseInt(args[1]), location, deathHandler);
+    }
 
-	public static EnemyUnit fromItem(final ItemStack item, final Location location, final Runnable deathHandler) {
-		final ItemMeta meta = item.getItemMeta();
-		final String name = meta.getDisplayName();
-		final String levelString = meta.getLore().get(0);
-		final int level = Integer.parseInt(levelString.substring(7, levelString.length()));
-		return createUnit(name, level, location, deathHandler);
-	}
+    public static EnemyUnit fromItem(final ItemStack item, final Location location, final Runnable deathHandler) {
+        final ItemMeta meta = item.getItemMeta();
+        final String name = meta.getDisplayName();
+        final String levelString = meta.getLore().get(0);
+        final int level = Integer.parseInt(levelString.substring(7, levelString.length()));
+        return createUnit(name, level, location, deathHandler);
+    }
 
-	private static EnemyUnit createUnit(final String name, final int level, final Location location,
-			final Runnable deathHandler) {
-		switch (name) {
-		case "Zombie":
-			return new ZombieUnit(location, level, deathHandler);
-		}
-		return null;
-	}
+    private static EnemyUnit createUnit(final String name, final int level, final Location location,
+                                        final Runnable deathHandler) {
+        switch (name) {
+            case "Zombie":
+                return new ZombieUnit(location, level, deathHandler);
+        }
+        return null;
+    }
 }
