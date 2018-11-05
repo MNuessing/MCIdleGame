@@ -15,9 +15,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.mcidlegame.plugin.Main;
+import com.mcidlegame.plugin.WorldManager;
+import com.mcidlegame.plugin.units.ally.AllyUnit;
+import com.mcidlegame.plugin.units.ally.ShooterUnit;
 import com.mcidlegame.plugin.units.enemy.EnemyUnit;
-import com.mcidlegame.plugin.units.friend.AllyUnit;
-import com.mcidlegame.plugin.units.friend.ShooterUnit;
 
 public class RoomData {
 
@@ -59,11 +60,11 @@ public class RoomData {
 		if (block.getType() != Material.COMMAND) {
 			return;
 		}
-		if (((CommandBlock) block.getState()).getCommand().equals("blocked")) {
+
+		if (WorldManager.getCommandStringOfCommandBlock(block).equals("blocked")) {
 			return;
 		}
 		new RoomData(chunk);
-
 	}
 
 	public static RoomData getRoom(final Chunk chunk) {

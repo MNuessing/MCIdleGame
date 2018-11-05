@@ -1,11 +1,10 @@
-package com.mcidlegame.plugin.units.friend;
+package com.mcidlegame.plugin.units.ally;
 
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.mcidlegame.plugin.units.Damager;
 import com.mcidlegame.plugin.units.Unit;
 
 public abstract class AllyUnit extends Unit implements Damager {
