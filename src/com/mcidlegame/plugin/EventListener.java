@@ -25,7 +25,6 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
 
@@ -50,7 +49,7 @@ public class EventListener implements Listener {
 
 			final ItemStack spawner = new ItemStack(Material.SKULL_ITEM, 1, (byte) 2);
 			final ItemMeta spawnerMeta = spawner.getItemMeta();
-			spawnerMeta.setDisplayName("Zombie Spawner");
+			spawnerMeta.setDisplayName("Zombie");
 			spawnerMeta.setLore(Collections.singletonList("Level: 1"));
 			spawner.setItemMeta(spawnerMeta);
 
@@ -64,7 +63,7 @@ public class EventListener implements Listener {
 			player.getInventory().addItem(ally);
 		}
 
-		player.setMetadata(Damager.metaString, new FixedMetadataValue(Main.main, new PlayerUnit(player.getLevel())));
+		PlayerUnit.apply(player);
 	}
 
 	@EventHandler

@@ -9,7 +9,6 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -22,11 +21,10 @@ public abstract class EnemyUnit extends Unit {
 
 	public static final String metaString = "enemyUnit";
 	// TODO: find an appropriate growth value
-	private static final IntUnaryOperator healthGrowth = n -> (n * (n + 1)) / 2;
+	private static final IntUnaryOperator healthGrowth = n -> (int) (10 * Math.pow(1.2, n - 1));
 	// TODO: write lvl / wave in file
 	private final int maxHealth;
 	private final Runnable deathHandler;
-	private LivingEntity entity;
 	private int health;
 	private BossBar healthbar;
 
@@ -41,6 +39,7 @@ public abstract class EnemyUnit extends Unit {
 	@Override
 	protected void onSpawn() {
 		this.entity.setMetadata(metaString, new FixedMetadataValue(Main.main, this));
+		this.health = this.maxHealth;
 		this.healthbar = Bukkit.createBossBar("Health: " + this.health, BarColor.RED, BarStyle.SEGMENTED_10);
 		for (final Entity nearby : this.entity.getNearbyEntities(6, 6, 6)) {
 			if (nearby instanceof Player) {
