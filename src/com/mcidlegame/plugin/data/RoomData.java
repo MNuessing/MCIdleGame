@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.CommandBlock;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -15,10 +16,8 @@ import org.bukkit.scheduler.BukkitTask;
 
 import com.mcidlegame.plugin.Main;
 import com.mcidlegame.plugin.units.enemy.EnemyUnit;
-import com.mcidlegame.plugin.units.enemy.ZombieUnit;
 import com.mcidlegame.plugin.units.friend.AllyUnit;
 import com.mcidlegame.plugin.units.friend.ShooterUnit;
-import com.mcidlegame.plugin.units.friend.SnowmanUnit;
 
 public class RoomData {
 
@@ -89,13 +88,7 @@ public class RoomData {
 		final String targetLine = targetState.getCommand();
 		if (!targetLine.equals("")) {
 			final Location targetSpawn = this.chunk.getBlock(8, 66, 8).getLocation().add(0.5, 0, 0.5);
-			final String[] args = targetLine.split(";");
-			// TODO: avoid code dublication
-			switch (args[0]) {
-			case "Zombie":
-				this.target = new ZombieUnit(targetSpawn, Integer.parseInt(args[1]), () -> onKill());
-				break;
-			}
+			this.target = EnemyUnit.fromString(targetLine, targetSpawn, () -> onKill());
 		}
 
 		for (final Slot slot : Slot.values()) {
@@ -103,14 +96,7 @@ public class RoomData {
 			final CommandBlock state = (CommandBlock) block.getState();
 			final String line = state.getCommand();
 			if (!line.equals("")) {
-				final String[] args = line.split(";");
-				// TODO: avoid code dublication
-				switch (args[0]) {
-				case "Snowman":
-					this.allies.put(slot,
-							new SnowmanUnit(slot.getSpawnLocation(this.chunk), Integer.parseInt(args[1])));
-					break;
-				}
+				this.allies.put(slot, AllyUnit.fromString(line, slot.getSpawnLocation(this.chunk)));
 			}
 		}
 		for (final AllyUnit ally : this.allies.values()) {
@@ -161,15 +147,14 @@ public class RoomData {
 		return this.target.toItem();
 	}
 
-	public void setTarget(final String name, final int level) {
-		((CommandBlock) this.chunk.getBlock(8, 64, 8)).setCommand(name + ";" + level);
-		// TODO: avoid code dublication
+	public void setTarget(final ItemStack item) {
 		final Location targetSpawn = this.chunk.getBlock(8, 66, 8).getLocation().add(0.5, 0, 0.5);
-		switch (name) {
-		case "Zombie":
-			this.target = new ZombieUnit(targetSpawn, level, () -> onKill());
-			break;
+		final EnemyUnit target = EnemyUnit.fromItem(item, targetSpawn, () -> onKill());
+		if (target == null) {
+			return;
 		}
+		((CommandBlock) this.chunk.getBlock(8, 64, 8)).setCommand(target.toString());
+		this.target = target;
 		this.target.spawn();
 		startShooting();
 	}
@@ -182,17 +167,29 @@ public class RoomData {
 		return ally.toItem();
 	}
 
-	public void addAlly(final Slot slot, final String name, final int level) {
-		((CommandBlock) slot.getBlock(this.chunk).getState()).setCommand(name + ";" + level);
-		AllyUnit ally = null;
-		// TODO: avoid code dublication
-		switch (name) {
-		case "Snowman":
-			ally = new SnowmanUnit(slot.getSpawnLocation(this.chunk), level);
-			break;
+	public void addAlly(final Slot slot, final ItemStack item) {
+		final AllyUnit ally = AllyUnit.fromItem(item, slot.getSpawnLocation(this.chunk));
+		if (ally == null) {
+			return;
 		}
+		((CommandBlock) slot.getBlock(this.chunk).getState()).setCommand(ally.toString());
 		this.allies.put(slot, ally);
 		ally.spawn();
+		if (this.target != null && !this.target.isDead() && ally instanceof ShooterUnit) {
+			((ShooterUnit) ally).startShooting();
+		}
+	}
+
+	public void joinRoom(final Player player) {
+		if (this.target != null && !this.target.isDead()) {
+			this.target.addToHealthbar(player);
+		}
+	}
+
+	public void leaveRoom(final Player player) {
+		if (this.target != null) {
+			this.target.removeHealthbar(player);
+		}
 	}
 
 }

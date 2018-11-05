@@ -43,6 +43,11 @@ public abstract class Unit {
 		return this.level;
 	}
 
+	@Override
+	public String toString() {
+		return this.name + ";" + this.level;
+	}
+
 	public final ItemStack toItem() {
 		final ItemStack item = getBaseItem();
 		final ItemMeta meta = item.getItemMeta();

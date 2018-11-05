@@ -19,6 +19,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
@@ -148,8 +149,26 @@ public class EventListener implements Listener {
 	}
 
 	@EventHandler
-	public void onChunkOnload(final ChunkUnloadEvent event) {
+	public void onChunkUnload(final ChunkUnloadEvent event) {
 		RoomData.unloadRoom(event.getChunk());
+	}
+
+	@EventHandler
+	public void onMove(final PlayerMoveEvent event) {
+		final Chunk chunkfrom = event.getFrom().getChunk();
+		final Chunk chunkto = event.getTo().getChunk();
+		if (chunkfrom != chunkto) {
+			final Player player = event.getPlayer();
+			final RoomData from = RoomData.getRoom(chunkfrom);
+			final RoomData to = RoomData.getRoom(chunkto);
+			if (from != null) {
+				from.leaveRoom(player);
+			}
+			if (to != null) {
+				to.joinRoom(player);
+			}
+
+		}
 	}
 
 }

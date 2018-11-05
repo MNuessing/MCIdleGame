@@ -11,6 +11,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import com.mcidlegame.plugin.Main;
@@ -84,5 +86,27 @@ public abstract class EnemyUnit extends Unit {
 
 	public boolean isDead() {
 		return this.entity.isDead();
+	}
+
+	public static EnemyUnit fromString(final String line, final Location location, final Runnable deathHandler) {
+		final String[] args = line.split(";");
+		return createUnit(args[0], Integer.parseInt(args[1]), location, deathHandler);
+	}
+
+	public static EnemyUnit fromItem(final ItemStack item, final Location location, final Runnable deathHandler) {
+		final ItemMeta meta = item.getItemMeta();
+		final String name = meta.getDisplayName();
+		final String levelString = meta.getLore().get(0);
+		final int level = Integer.parseInt(levelString.substring(7, levelString.length()));
+		return createUnit(name, level, location, deathHandler);
+	}
+
+	private static EnemyUnit createUnit(final String name, final int level, final Location location,
+			final Runnable deathHandler) {
+		switch (name) {
+		case "Zombie":
+			return new ZombieUnit(location, level, deathHandler);
+		}
+		return null;
 	}
 }
