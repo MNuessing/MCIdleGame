@@ -141,7 +141,7 @@ public class RoomData {
 		if (this.respawn != null && !this.respawn.isCancelled()) {
 			this.respawn.cancel();
 		}
-		((CommandBlock) this.chunk.getBlock(8, 64, 4).getState()).setCommand("");
+		WorldManager.setCommand(this.chunk.getBlock(8, 64, 8), "");
 		stopShooting();
 		this.target.remove();
 		this.target = null;
@@ -154,14 +154,14 @@ public class RoomData {
 		if (target == null) {
 			return;
 		}
-		((CommandBlock) this.chunk.getBlock(8, 64, 8)).setCommand(target.toString());
+		WorldManager.setCommand(this.chunk.getBlock(8, 64, 8), target.toString());
 		this.target = target;
 		this.target.spawn();
 		startShooting();
 	}
 
 	public ItemStack removeAlly(final Slot slot) {
-		((CommandBlock) slot.getBlock(this.chunk).getState()).setCommand("");
+		WorldManager.setCommand(slot.getBlock(this.chunk), "");
 		final AllyUnit ally = this.allies.get(slot);
 		ally.remove();
 		this.allies.remove(slot);
@@ -173,7 +173,7 @@ public class RoomData {
 		if (ally == null) {
 			return;
 		}
-		((CommandBlock) slot.getBlock(this.chunk).getState()).setCommand(ally.toString());
+		WorldManager.setCommand(slot.getBlock(this.chunk), ally.toString());
 		this.allies.put(slot, ally);
 		ally.spawn();
 		if (this.target != null && !this.target.isDead() && ally instanceof ShooterUnit) {

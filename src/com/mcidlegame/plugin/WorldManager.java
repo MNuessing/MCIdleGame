@@ -45,7 +45,7 @@ public class WorldManager {
 				}
 			}
 		}
-		((CommandBlock) chunk.getBlock(8, 64, 8).getState()).setCommand("locked");
+		setCommand(chunk.getBlock(8, 64, 8), "locked");
 	}
 
 	public static void unlockRoom(final Chunk chunk) {
@@ -63,7 +63,7 @@ public class WorldManager {
 				}
 			}
 		}
-		((CommandBlock) chunk.getBlock(8, 64, 8).getState()).setCommand("");
+		setCommand(chunk.getBlock(8, 64, 8), "");
 	}
 
 	public static boolean hasRoom(final Chunk chunk) {
