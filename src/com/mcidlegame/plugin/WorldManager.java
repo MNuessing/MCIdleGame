@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import com.mcidlegame.plugin.data.BlockHandler;
 
@@ -96,6 +97,13 @@ public class WorldManager {
 		}
 		final CommandBlock commandBlock = (CommandBlock) block.getState();
 		return commandBlock.getCommand();
+	}
+
+	public static void dropItems(final Location loc, final int amount, final Material material) {
+		for (int i = 0; i < amount / 64; i++) {
+			loc.getWorld().dropItem(loc, new ItemStack(material, 64));
+		}
+		loc.getWorld().dropItem(loc, new ItemStack(material, amount % 64));
 	}
 
 }

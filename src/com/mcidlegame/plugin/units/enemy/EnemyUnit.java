@@ -3,6 +3,7 @@ package com.mcidlegame.plugin.units.enemy;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.IntUnaryOperator;
 
 import org.bukkit.Bukkit;
@@ -18,6 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import com.mcidlegame.plugin.Main;
+import com.mcidlegame.plugin.WorldManager;
 import com.mcidlegame.plugin.units.Unit;
 import com.mcidlegame.plugin.units.spawner.Spawner;
 
@@ -88,17 +90,15 @@ public abstract class EnemyUnit extends Unit {
 
 	private void die() {
 		this.spawner.kill();
-		for (final Material material : lootMap.keySet()) {
-			final double dropChance = lootMap.get(material) * Math.pow(0.25, this.level - 1);
-			int fixAmaunt = (int) dropChance;
+		for (final Entry<Material, Double> entry : lootMap.entrySet()) {
+			final double dropChance = entry.getValue() * Math.pow(0.25, this.level - 1);
+			int fixAmount = (int) dropChance;
 
-			if ((dropChance - fixAmaunt) > Math.random()) {
-				fixAmaunt++;
+			if ((dropChance - fixAmount) > Math.random()) {
+				fixAmount++;
 			}
 
-			final Location loc = this.spawner.getLoacation();
-			loc.getWorld().dropItem(loc, new ItemStack(material, fixAmaunt));
-
+			WorldManager.dropItems(this.spawner.getLoacation(), fixAmount, entry.getKey());
 		}
 		removeHealthbar();
 		this.deathHandler.run();
