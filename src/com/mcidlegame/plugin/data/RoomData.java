@@ -29,13 +29,14 @@ public class RoomData {
 	private final Map<Slot, AllyUnit> allies = new HashMap<>();
 	private final Chunk chunk;
 	private BukkitTask respawn;
+	private static final BlockHandler blockHandler = new BlockHandler(8, 64, 8);
 
 	public static void checkChunk(final Chunk chunk) {
 		if (chunk == null) {
 			return;
 		}
 
-		final Block block = chunk.getBlock(8, 64, 8);
+		final Block block = blockHandler.getBlock(chunk);
 		if (block == null || block.getType() != Material.COMMAND) {
 			return;
 		}
@@ -57,17 +58,17 @@ public class RoomData {
 
 	private RoomData(final Chunk chunk) {
 		this.chunk = chunk;
-		chunk.getBlock(8, 64, 8).setMetadata(metaString, new FixedMetadataValue(Main.main, this));
+		blockHandler.getBlock(this.chunk).setMetadata(metaString, new FixedMetadataValue(Main.main, this));
 		rooms.put(chunk, this);
 
 		setup();
 	}
 
 	private void setup() {
-		final Block targetBlock = this.chunk.getBlock(8, 64, 8);
+		final Block targetBlock = blockHandler.getBlock(this.chunk);
 		final String targetLine = WorldManager.getCommandString(targetBlock);
 		if (!targetLine.equals("")) {
-			final Location targetSpawn = this.chunk.getBlock(8, 66, 8).getLocation().add(0.5, 0, 0.5);
+			final Location targetSpawn = blockHandler.getLocation(this.chunk);
 			this.target = EnemyUnit.fromString(targetLine, targetSpawn, () -> onKill());
 		}
 
@@ -118,7 +119,7 @@ public class RoomData {
 		if (this.respawn != null && !this.respawn.isCancelled()) {
 			this.respawn.cancel();
 		}
-		WorldManager.setCommand(this.chunk.getBlock(8, 64, 8), "");
+		WorldManager.setCommand(blockHandler.getBlock(this.chunk), "");
 		stopShooting();
 		this.target.remove();
 		this.target = null;
@@ -126,12 +127,12 @@ public class RoomData {
 	}
 
 	public void setTarget(final ItemStack item) {
-		final Location targetSpawn = this.chunk.getBlock(8, 66, 8).getLocation().add(0.5, 0, 0.5);
+		final Location targetSpawn = blockHandler.getLocation(this.chunk);
 		final EnemyUnit target = EnemyUnit.fromItem(item, targetSpawn, () -> onKill());
 		if (target == null) {
 			return;
 		}
-		WorldManager.setCommand(this.chunk.getBlock(8, 64, 8), target.toString());
+		WorldManager.setCommand(blockHandler.getBlock(this.chunk), target.toString());
 		this.target = target;
 		this.target.spawn();
 		startShooting();
