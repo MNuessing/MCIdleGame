@@ -38,7 +38,10 @@ public class Main extends JavaPlugin {
 				entity.remove();
 			} else {
 				final Player player = (Player) entity;
-				RoomData.getRoom(player.getLocation().getChunk()).leaveRoom(player);
+				final RoomData data = RoomData.getRoom(player.getLocation().getChunk());
+				if (data != null) {
+					data.leaveRoom(player);
+				}
 			}
 		}
 	}
