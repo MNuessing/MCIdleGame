@@ -3,6 +3,7 @@ package com.mcidlegame.plugin.units.enemy;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.IntUnaryOperator;
 
 import org.bukkit.Bukkit;
@@ -88,8 +89,8 @@ public abstract class EnemyUnit extends Unit {
 
 	private void die() {
 		this.spawner.kill();
-		for (final Material material : lootMap.keySet()) {
-			final double dropChance = lootMap.get(material) * Math.pow(0.25, this.level - 1);
+		for (final Entry<Material, Double> entry : lootMap.entrySet()) {
+			final double dropChance = entry.getValue() * Math.pow(0.25, this.level - 1);
 			int fixAmaunt = (int) dropChance;
 
 			if ((dropChance - fixAmaunt) > Math.random()) {
@@ -97,7 +98,7 @@ public abstract class EnemyUnit extends Unit {
 			}
 
 			final Location loc = this.spawner.getLoacation();
-			loc.getWorld().dropItem(loc, new ItemStack(material, fixAmaunt));
+			loc.getWorld().dropItem(loc, new ItemStack(entry.getKey(), fixAmaunt));
 
 		}
 		removeHealthbar();
