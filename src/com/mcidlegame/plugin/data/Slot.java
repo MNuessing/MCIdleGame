@@ -5,7 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 
 public enum Slot {
-	NORTH(7, 10, 0f), EAST(10, 7, 90f), SOUTH(7, 4, 180f), WEST(4, 7, -90f);
+	NORTH(7, 10, 180f), EAST(10, 7, 90f), SOUTH(7, 4, 0f), WEST(4, 7, -90f);
 
 	private final int x;
 	private final int z;

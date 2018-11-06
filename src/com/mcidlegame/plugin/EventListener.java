@@ -7,22 +7,26 @@ import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockFormEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.MetadataValue;
@@ -168,6 +172,33 @@ public class EventListener implements Listener {
 			}
 
 		}
+	}
+
+	@EventHandler
+	public void onInteract(final PlayerInteractEvent event) {
+		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+			return;
+		}
+		if (event.getHand() != EquipmentSlot.OFF_HAND) {
+			return;
+		}
+
+		final Block block = event.getClickedBlock();
+		final RoomData data = getRoomData(block);
+		if (data == null) {
+			return;
+		}
+
+		data.interact(event.getPlayer(), block);
+	}
+
+	private RoomData getRoomData(final Block block) {
+		for (final MetadataValue value : block.getMetadata(RoomData.metaString)) {
+			if (value.getOwningPlugin() == Main.main) {
+				return (RoomData) value.value();
+			}
+		}
+		return null;
 	}
 
 }

@@ -33,6 +33,7 @@ public abstract class Unit {
 
 	public final void remove() {
 		this.entity.remove();
+		onRemove();
 	}
 
 	public String getName() {
