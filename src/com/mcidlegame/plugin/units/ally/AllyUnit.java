@@ -4,21 +4,28 @@ import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 
+import com.mcidlegame.plugin.Main;
 import com.mcidlegame.plugin.units.Unit;
+import com.mcidlegame.plugin.units.spawner.Spawner;
 
 public abstract class AllyUnit extends Unit implements Damager {
 
-	public AllyUnit(final String name, final EntityType type, final Location location, final int level) {
-		super(name, type, location, level);
+	public AllyUnit(final String name, final Spawner spawner, final int level) {
+		super(name, spawner, level);
 	}
 
 	public static AllyUnit fromString(final String line, final Location location) {
 		final String[] args = line.split(";");
 		return createUnit(args[0], Integer.parseInt(args[1]), location);
+	}
+
+	@Override
+	public void onSpawn() {
+		this.unit.setMetadata(metaString, new FixedMetadataValue(Main.main, this));
 	}
 
 	public static AllyUnit fromItem(final ItemStack item, final Location location) {

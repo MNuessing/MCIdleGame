@@ -1,55 +1,50 @@
 package com.mcidlegame.plugin.units.spawner;
 
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.material.Dispenser;
-import org.bukkit.material.MaterialData;
 import org.bukkit.metadata.Metadatable;
 
 public class BlockSpawner implements Spawner {
 
+	private final String name;
 	private final Block block;
-	private final BlockFace face;
 	private final Material type;
 
-	public BlockSpawner(final Location loc, final Material type) {
+	public BlockSpawner(final String name, final Location loc, final Material type) {
+		this.name = name;
 		this.block = loc.getBlock();
 		this.type = type;
-		switch ((int) loc.getYaw()) {
-		case 180:
-			this.face = BlockFace.SOUTH;
-			break;
-		case 90:
-			this.face = BlockFace.WEST;
-			break;
-		case -90:
-			this.face = BlockFace.EAST;
-			break;
-		default:
-			this.face = BlockFace.NORTH;
-		}
 	}
 
 	@Override
 	public Metadatable spawn() {
 		this.block.setType(this.type);
-		final MaterialData data = this.block.getState().getData();
-		if (data instanceof Dispenser) {
-			((Dispenser) data).setFacingDirection(this.face);
-		}
+		// TODO: set name
 		return this.block;
 	}
 
 	@Override
 	public void kill() {
+		// TODO: remove name
 		this.block.setType(Material.AIR);
 	}
 
 	@Override
 	public void remove() {
+		// TODO: remove name
 		this.block.setType(Material.AIR);
+	}
+
+	@Override
+	public boolean isDead() {
+		return this.block.getType() == Material.AIR;
+	}
+
+	@Override
+	public Chunk getChunk() {
+		return this.block.getChunk();
 	}
 
 }

@@ -10,7 +10,6 @@ import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -18,21 +17,21 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import com.mcidlegame.plugin.Main;
 import com.mcidlegame.plugin.units.Unit;
+import com.mcidlegame.plugin.units.spawner.Spawner;
 
 public abstract class EnemyUnit extends Unit {
 
 	public static final String metaString = "enemyUnit";
 	// TODO: find an appropriate growth value
 	private static final IntUnaryOperator healthGrowth = n -> (int) (10 * Math.pow(1.2, n - 1));
-	// TODO: write lvl / wave in file
 	private final int maxHealth;
 	private final Runnable deathHandler;
 	private int health;
 	private BossBar healthbar;
 
-	public EnemyUnit(final String name, final EntityType type, final Location location, final int level,
-			final double healthModifier, final Runnable deathHandler) {
-		super(name, type, location, level);
+	public EnemyUnit(final String name, final Spawner spawner, final int level, final double healthModifier,
+			final Runnable deathHandler) {
+		super(name, spawner, level);
 		this.deathHandler = deathHandler;
 		this.maxHealth = this.health = (int) (healthGrowth.applyAsInt(level) * healthModifier);
 		this.healthbar = Bukkit.createBossBar("Health: " + this.health, BarColor.RED, BarStyle.SEGMENTED_10);
@@ -40,10 +39,10 @@ public abstract class EnemyUnit extends Unit {
 
 	@Override
 	protected void onSpawn() {
-		this.entity.setMetadata(metaString, new FixedMetadataValue(Main.main, this));
+		this.unit.setMetadata(metaString, new FixedMetadataValue(Main.main, this));
 		this.health = this.maxHealth;
 		this.healthbar = Bukkit.createBossBar("Health: " + this.health, BarColor.RED, BarStyle.SEGMENTED_10);
-		for (final Entity nearby : this.entity.getNearbyEntities(6, 6, 6)) {
+		for (final Entity nearby : this.spawner.getChunk().getEntities()) {
 			if (nearby instanceof Player) {
 				this.healthbar.addPlayer((Player) nearby);
 			}
@@ -81,13 +80,13 @@ public abstract class EnemyUnit extends Unit {
 	}
 
 	private void die() {
-		this.entity.setHealth(0);
+		this.spawner.kill();
 		removeHealthbar();
 		this.deathHandler.run();
 	}
 
 	public boolean isDead() {
-		return this.entity.isDead();
+		return this.spawner.isDead();
 	}
 
 	public static EnemyUnit fromString(final String line, final Location location, final Runnable deathHandler) {

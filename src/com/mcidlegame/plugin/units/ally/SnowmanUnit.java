@@ -6,10 +6,13 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Snowball;
 import org.bukkit.inventory.ItemStack;
 
+import com.mcidlegame.plugin.units.spawner.LivingEntitySpawner;
+
 public class SnowmanUnit extends ShooterUnit {
 
 	public SnowmanUnit(final Location location, final int level) {
-		super("Snowman", EntityType.SNOWMAN, location, level, 20L, Snowball.class, 1.0);
+		super("Snowman", new LivingEntitySpawner("Snowman level " + level, location, EntityType.SNOWMAN), level, 20L,
+				Snowball.class, 1.0);
 	}
 
 	@Override

@@ -5,10 +5,13 @@ import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
+import com.mcidlegame.plugin.units.spawner.LivingEntitySpawner;
+
 public class ZombieUnit extends EnemyUnit {
 
 	public ZombieUnit(final Location location, final int level, final Runnable deathHandler) {
-		super("Zombie", EntityType.ZOMBIE, location, level, 1.0, deathHandler);
+		super("Zombie", new LivingEntitySpawner("Zombie Level " + level, location, EntityType.ZOMBIE), level, 1.0,
+				deathHandler);
 	}
 
 	@Override

@@ -2,37 +2,32 @@ package com.mcidlegame.plugin.units;
 
 import java.util.Collections;
 
-import org.bukkit.Location;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.Metadatable;
+
+import com.mcidlegame.plugin.units.spawner.Spawner;
 
 public abstract class Unit {
 
 	private final String name;
-	private final EntityType type;
-	private final Location location;
+	protected final Spawner spawner;
 	private final int level;
-	protected LivingEntity entity;
+	protected Metadatable unit;
 
-	public Unit(final String name, final EntityType type, final Location location, final int level) {
+	public Unit(final String name, final Spawner spawner, final int level) {
 		this.name = name;
-		this.type = type;
-		this.location = location;
+		this.spawner = spawner;
 		this.level = level;
 	}
 
 	public final void spawn() {
-		this.entity = (LivingEntity) this.location.getWorld().spawnEntity(this.location, this.type);
-		this.entity.setAI(false);
-		this.entity.setCustomName(this.name + " Level: " + this.level);
-		this.entity.setCustomNameVisible(true);
+		this.unit = this.spawner.spawn();
 		onSpawn();
 	}
 
 	public final void remove() {
-		this.entity.remove();
+		this.spawner.remove();
 		onRemove();
 	}
 

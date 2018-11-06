@@ -1,5 +1,6 @@
 package com.mcidlegame.plugin.units.spawner;
 
+import org.bukkit.Chunk;
 import org.bukkit.metadata.Metadatable;
 
 public interface Spawner {
@@ -9,5 +10,9 @@ public interface Spawner {
 	void kill();
 
 	void remove();
+
+	boolean isDead();
+
+	Chunk getChunk();
 
 }
