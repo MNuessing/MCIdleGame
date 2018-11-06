@@ -122,7 +122,6 @@ public class EventListener implements Listener {
 	public void onDeath(final EntityDeathEvent event) {
 		event.setDroppedExp(0);
 		event.getDrops().clear();
-		Game.checkDeath(event.getEntity());
 	}
 
 	@EventHandler
