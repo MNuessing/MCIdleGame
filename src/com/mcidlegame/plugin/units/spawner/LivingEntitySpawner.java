@@ -31,16 +31,23 @@ public class LivingEntitySpawner implements Spawner {
 
 	@Override
 	public void kill() {
-		this.entity.setHealth(0);
+		if (this.entity != null) {
+			this.entity.setHealth(0);
+		}
 	}
 
 	@Override
 	public void remove() {
-		this.entity.remove();
+		if (this.entity != null) {
+			this.entity.remove();
+		}
 	}
 
 	@Override
 	public boolean isDead() {
+		if (this.entity == null) {
+			return true;
+		}
 		return this.entity.isDead();
 	}
 
