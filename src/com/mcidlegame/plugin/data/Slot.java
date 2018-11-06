@@ -5,14 +5,14 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 
 public enum Slot {
-	NORTH(11, 8, 180f), EAST(8, 11, -90f), SOUTH(5, 8, 0f), WEST(8, 5, 90f);
+	NORTH(7, 10, 180f), EAST(10, 7, 90f), SOUTH(7, 4, 0f), WEST(4, 7, -90f);
 
-	private BlockHandler blockHandler;
-	private final float pitch;
+	private final float yaw;
+	private final BlockHandler blockHandler;
 
-	private Slot(final int x, final int z, final float pitch) {
+	private Slot(final int x, final int z, final float yaw) {
 		this.blockHandler = new BlockHandler(x, 64, z);
-		this.pitch = pitch;
+		this.yaw = yaw;
 	}
 
 	protected Block getBlock(final Chunk chunk) {
@@ -21,7 +21,8 @@ public enum Slot {
 
 	protected Location getSpawnLocation(final Chunk chunk) {
 		final Location location = this.blockHandler.getLocation(chunk);
-		location.setPitch(this.pitch);
+		location.setYaw(this.yaw);
+		location.setPitch(20f);
 		return location;
 	}
 }

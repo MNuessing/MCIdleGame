@@ -6,10 +6,14 @@ import java.util.Map;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -22,6 +26,7 @@ import com.mcidlegame.plugin.units.enemy.EnemyUnit;
 public class RoomData {
 
 	public static final String metaString = "room";
+	public static final String metaSlotString = "roomSlot";
 
 	private static final Map<Chunk, RoomData> rooms = new HashMap<>();
 
@@ -29,7 +34,7 @@ public class RoomData {
 	private final Map<Slot, AllyUnit> allies = new HashMap<>();
 	private final Chunk chunk;
 	private BukkitTask respawn;
-	private static final BlockHandler blockHandler = new BlockHandler(8, 64, 8);
+	private static final BlockHandler blockHandler = new BlockHandler(7, 64, 7);
 
 	public static void checkChunk(final Chunk chunk) {
 		if (chunk == null) {
@@ -41,7 +46,7 @@ public class RoomData {
 			return;
 		}
 
-		if (WorldManager.getCommandString(block).equals("blocked")) {
+		if (WorldManager.getCommandString(block).equals("locked")) {
 			return;
 		}
 
@@ -58,7 +63,6 @@ public class RoomData {
 
 	private RoomData(final Chunk chunk) {
 		this.chunk = chunk;
-		blockHandler.getBlock(this.chunk).setMetadata(metaString, new FixedMetadataValue(Main.main, this));
 		rooms.put(chunk, this);
 
 		setup();
@@ -69,8 +73,9 @@ public class RoomData {
 		final String targetLine = WorldManager.getCommandString(targetBlock);
 		if (!targetLine.equals("")) {
 			final Location targetSpawn = blockHandler.getLocation(this.chunk);
-			this.target = EnemyUnit.fromString(targetLine, targetSpawn, () -> onKill());
+			this.target = EnemyUnit.fromString(targetLine, targetSpawn, this::onKill);
 		}
+		targetBlock.getRelative(BlockFace.UP).setMetadata(metaString, new FixedMetadataValue(Main.main, this));
 
 		for (final Slot slot : Slot.values()) {
 			final Block block = slot.getBlock(this.chunk);
@@ -80,9 +85,14 @@ public class RoomData {
 				this.allies.put(slot, ally);
 				ally.spawn();
 			}
+			final Block upper = block.getRelative(BlockFace.UP);
+			upper.setMetadata(metaString, new FixedMetadataValue(Main.main, this));
+			upper.setMetadata(metaSlotString, new FixedMetadataValue(Main.main, slot));
 		}
-		this.target.spawn();
-		startShooting();
+		if (this.target != null) {
+			this.target.spawn();
+			startShooting();
+		}
 	}
 
 	public void onKill() {
@@ -122,20 +132,23 @@ public class RoomData {
 		WorldManager.setCommand(blockHandler.getBlock(this.chunk), "");
 		stopShooting();
 		this.target.remove();
+		final ItemStack item = this.target.toItem();
 		this.target = null;
-		return this.target.toItem();
+		return item;
 	}
 
-	public void setTarget(final ItemStack item) {
+	public boolean setTarget(final ItemStack item) {
 		final Location targetSpawn = blockHandler.getLocation(this.chunk);
-		final EnemyUnit target = EnemyUnit.fromItem(item, targetSpawn, () -> onKill());
+		final EnemyUnit target = EnemyUnit.fromItem(item, targetSpawn, this::onKill);
 		if (target == null) {
-			return;
+			return false;
 		}
 		WorldManager.setCommand(blockHandler.getBlock(this.chunk), target.toString());
 		this.target = target;
 		this.target.spawn();
 		startShooting();
+
+		return true;
 	}
 
 	public ItemStack removeAlly(final Slot slot) {
@@ -146,10 +159,10 @@ public class RoomData {
 		return ally.toItem();
 	}
 
-	public void addAlly(final Slot slot, final ItemStack item) {
+	public boolean addAlly(final Slot slot, final ItemStack item) {
 		final AllyUnit ally = AllyUnit.fromItem(item, slot.getSpawnLocation(this.chunk));
 		if (ally == null) {
-			return;
+			return false;
 		}
 		WorldManager.setCommand(slot.getBlock(this.chunk), ally.toString());
 		this.allies.put(slot, ally);
@@ -157,6 +170,8 @@ public class RoomData {
 		if (this.target != null && !this.target.isDead() && ally instanceof ShooterUnit) {
 			((ShooterUnit) ally).startShooting();
 		}
+
+		return true;
 	}
 
 	public void joinRoom(final Player player) {
@@ -169,6 +184,59 @@ public class RoomData {
 		if (this.target != null) {
 			this.target.removeHealthbar(player);
 		}
+	}
+
+	public void interact(final Player player, final Block block) {
+		final Slot slot = getSlot(block);
+		if (slot == null) {
+			interactTarget(player);
+		} else {
+			interactAlly(player, slot);
+		}
+	}
+
+	private Slot getSlot(final Block block) {
+		for (final MetadataValue value : block.getMetadata(metaSlotString)) {
+			if (value.getOwningPlugin() == Main.main) {
+				return (Slot) value.value();
+			}
+		}
+		return null;
+	}
+
+	private void interactTarget(final Player player) {
+		if (this.target != null) {
+			addItem(player, removeTarget());
+		} else if (setTarget(player.getInventory().getItemInMainHand())) {
+			decreaseItem(player);
+		}
+	}
+
+	private void interactAlly(final Player player, final Slot slot) {
+		if (this.allies.containsKey(slot)) {
+			addItem(player, removeAlly(slot));
+		} else if (addAlly(slot, player.getInventory().getItemInMainHand())) {
+			decreaseItem(player);
+		}
+	}
+
+	private void addItem(final Player player, final ItemStack... items) {
+		final Map<Integer, ItemStack> remains = player.getInventory().addItem(items);
+		if (remains.isEmpty()) {
+			return;
+		}
+		final Location location = player.getLocation();
+		final World world = location.getWorld();
+		for (final ItemStack item : remains.values()) {
+			world.dropItem(location, item);
+		}
+	}
+
+	private void decreaseItem(final Player player) {
+		final PlayerInventory inventory = player.getInventory();
+		final ItemStack item = inventory.getItemInMainHand();
+		item.setAmount(item.getAmount() - 1);
+		inventory.setItemInMainHand(item);
 	}
 
 }
