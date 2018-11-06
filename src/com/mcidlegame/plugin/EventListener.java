@@ -187,14 +187,18 @@ public class EventListener implements Listener {
 		}
 		final Block block = event.getClickedBlock();
 		final RoomData data = getRoomData(block);
-		if (data == null) {
-			if (block.getType() == Material.JACK_O_LANTERN) {
-				WorldManager.addRoom(block.getChunk());
-				PlayerUtils.decreaseItem(event.getPlayer());
-			}
+		if (data != null) {
+			data.interact(event.getPlayer(), block);
 			return;
 		}
-		data.interact(event.getPlayer(), block);
+		if (block.getType() != Material.JACK_O_LANTERN) {
+			return;
+		}
+		if (event.getPlayer().getInventory().getItemInMainHand().getType() != Material.JACK_O_LANTERN) {
+			return;
+		}
+		WorldManager.addRoom(block.getChunk());
+		PlayerUtils.decreaseItem(event.getPlayer());
 	}
 
 	private RoomData getRoomData(final Block block) {
