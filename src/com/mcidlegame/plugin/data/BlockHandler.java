@@ -9,6 +9,10 @@ public class BlockHandler {
 	private final int y;
 	private final int z;
 
+	public BlockHandler() {
+		this(7, 64, 7);
+	}
+
 	public BlockHandler(final int x, final int y, final int z) {
 		this.x = x;
 		this.y = y;

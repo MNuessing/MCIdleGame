@@ -9,7 +9,11 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.entity.Player;
 
+import com.mcidlegame.plugin.data.BlockHandler;
+
 public class WorldManager {
+
+	private static final BlockHandler commandBlock = new BlockHandler();
 
 	public static void addRoom(final Chunk chunk) {
 		final World world = chunk.getWorld();
@@ -45,7 +49,7 @@ public class WorldManager {
 				}
 			}
 		}
-		setCommand(chunk.getBlock(7, 64, 7), "locked");
+		setCommand(commandBlock.getBlock(chunk), "locked");
 	}
 
 	public static void unlockRoom(final Chunk chunk) {
@@ -56,18 +60,18 @@ public class WorldManager {
 				for (int y = 65; y < 68; y++) {
 					for (int z = pair[1] - 1; z < pair[1] + 2; z++) {
 						final Block block = chunk.getBlock(x, y, z);
-						if (block.getType() == Material.WOOL) {
+						if (block.getType() == Material.WOOL || block.getType() == Material.JACK_O_LANTERN) {
 							block.setType(Material.AIR);
 						}
 					}
 				}
 			}
 		}
-		setCommand(chunk.getBlock(7, 64, 7), "");
+		setCommand(commandBlock.getBlock(chunk), "");
 	}
 
 	public static boolean hasRoom(final Chunk chunk) {
-		if (chunk.getBlock(8, 64, 8).getType() == Material.AIR) {
+		if (commandBlock.getBlock(chunk).getType() == Material.AIR) {
 			return false;
 		}
 		return true;

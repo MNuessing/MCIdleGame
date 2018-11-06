@@ -34,7 +34,7 @@ public class RoomData {
 	private final Map<Slot, AllyUnit> allies = new HashMap<>();
 	private final Chunk chunk;
 	private BukkitTask respawn;
-	private static final BlockHandler blockHandler = new BlockHandler(7, 64, 7);
+	private static final BlockHandler blockHandler = new BlockHandler();
 
 	public static void checkChunk(final Chunk chunk) {
 		if (chunk == null) {
