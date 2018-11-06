@@ -11,13 +11,13 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.mcidlegame.plugin.Main;
+import com.mcidlegame.plugin.PlayerUtils;
 import com.mcidlegame.plugin.WorldManager;
 import com.mcidlegame.plugin.units.ally.AllyUnit;
 import com.mcidlegame.plugin.units.ally.ShooterUnit;
@@ -208,7 +208,7 @@ public class RoomData {
 		if (this.target != null) {
 			addItem(player, removeTarget());
 		} else if (setTarget(player.getInventory().getItemInMainHand())) {
-			decreaseItem(player);
+			PlayerUtils.decreaseItem(player);
 		}
 	}
 
@@ -216,7 +216,7 @@ public class RoomData {
 		if (this.allies.containsKey(slot)) {
 			addItem(player, removeAlly(slot));
 		} else if (addAlly(slot, player.getInventory().getItemInMainHand())) {
-			decreaseItem(player);
+			PlayerUtils.decreaseItem(player);
 		}
 	}
 
@@ -231,12 +231,4 @@ public class RoomData {
 			world.dropItem(location, item);
 		}
 	}
-
-	private void decreaseItem(final Player player) {
-		final PlayerInventory inventory = player.getInventory();
-		final ItemStack item = inventory.getItemInMainHand();
-		item.setAmount(item.getAmount() - 1);
-		inventory.setItemInMainHand(item);
-	}
-
 }

@@ -27,7 +27,7 @@ public class WorldManager {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static void createRoom(final Chunk chunk) {
+	private static void createRoom(final Chunk chunk) {
 		final World world = chunk.getWorld();
 		final Chunk nullChunk = world.getChunkAt(0, 0);
 
