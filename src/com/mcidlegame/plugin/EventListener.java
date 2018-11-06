@@ -68,6 +68,10 @@ public class EventListener implements Listener {
 		}
 
 		PlayerUnit.apply(player);
+		final RoomData data = RoomData.getRoom(player.getLocation().getChunk());
+		if (data != null) {
+			data.joinRoom(player);
+		}
 	}
 
 	@EventHandler
