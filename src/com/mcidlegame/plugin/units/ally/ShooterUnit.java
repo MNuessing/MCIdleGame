@@ -36,7 +36,7 @@ public abstract class ShooterUnit extends AllyUnit implements Damager {
 
 	@Override
 	public void onRemove() {
-		if (!this.shooting.isCancelled()) {
+		if (this.shooting != null && !this.shooting.isCancelled()) {
 			this.shooting.cancel();
 		}
 	}
