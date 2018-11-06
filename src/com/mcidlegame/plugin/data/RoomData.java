@@ -88,8 +88,10 @@ public class RoomData {
 			upper.setMetadata(metaString, new FixedMetadataValue(Main.main, this));
 			upper.setMetadata(metaSlotString, new FixedMetadataValue(Main.main, slot));
 		}
-		this.target.spawn();
-		startShooting();
+		if (this.target != null) {
+			this.target.spawn();
+			startShooting();
+		}
 	}
 
 	public void onKill() {
