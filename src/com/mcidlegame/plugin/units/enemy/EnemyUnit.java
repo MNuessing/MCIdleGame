@@ -1,6 +1,8 @@
 package com.mcidlegame.plugin.units.enemy;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.IntUnaryOperator;
 
 import org.bukkit.Bukkit;
@@ -24,6 +26,7 @@ public abstract class EnemyUnit extends Unit {
 	public static final String metaString = "enemyUnit";
 	// TODO: find an appropriate growth value
 	private static final IntUnaryOperator healthGrowth = n -> (int) (10 * Math.pow(1.2, n - 1));
+	protected static final Map<Material, Double> lootMap = new HashMap<>();
 	private final int maxHealth;
 	private final Runnable deathHandler;
 	private int health;
@@ -35,7 +38,11 @@ public abstract class EnemyUnit extends Unit {
 		this.deathHandler = deathHandler;
 		this.maxHealth = this.health = (int) (healthGrowth.applyAsInt(level) * healthModifier);
 		this.healthbar = Bukkit.createBossBar("Health: " + this.health, BarColor.RED, BarStyle.SEGMENTED_10);
+
+		initLootMap();
 	}
+
+	protected abstract void initLootMap();
 
 	@Override
 	protected void onSpawn() {
@@ -81,6 +88,18 @@ public abstract class EnemyUnit extends Unit {
 
 	private void die() {
 		this.spawner.kill();
+		for (final Material material : lootMap.keySet()) {
+			final double dropChance = lootMap.get(material) * Math.pow(0.25, this.level - 1);
+			int fixAmaunt = (int) dropChance;
+
+			if ((dropChance - fixAmaunt) > Math.random()) {
+				fixAmaunt++;
+			}
+
+			final Location loc = this.spawner.getLoacation();
+			loc.getWorld().dropItem(loc, new ItemStack(material, fixAmaunt));
+
+		}
 		removeHealthbar();
 		this.deathHandler.run();
 	}

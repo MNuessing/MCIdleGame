@@ -1,6 +1,7 @@
 package com.mcidlegame.plugin.units.spawner;
 
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.metadata.Metadatable;
 
 public interface Spawner {
@@ -15,4 +16,5 @@ public interface Spawner {
 
 	Chunk getChunk();
 
+	Location getLoacation();
 }

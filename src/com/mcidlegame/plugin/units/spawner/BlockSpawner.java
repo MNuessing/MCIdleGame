@@ -47,4 +47,9 @@ public class BlockSpawner implements Spawner {
 		return this.block.getChunk();
 	}
 
+	@Override
+	public Location getLoacation() {
+		return this.block.getLocation().add(0.5, 0, 0.5);
+	}
+
 }

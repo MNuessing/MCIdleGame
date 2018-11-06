@@ -19,4 +19,9 @@ public class ZombieUnit extends EnemyUnit {
 		return new ItemStack(Material.SKULL_ITEM, 1, (byte) 2);
 	}
 
+	@Override
+	protected void initLootMap() {
+		lootMap.put(Material.GOLD_NUGGET, 0.4);
+	}
+
 }

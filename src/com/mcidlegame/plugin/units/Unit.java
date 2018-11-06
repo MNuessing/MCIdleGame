@@ -12,7 +12,7 @@ public abstract class Unit {
 
 	private final String name;
 	protected final Spawner spawner;
-	private final int level;
+	protected final int level;
 	protected Metadatable unit;
 
 	public Unit(final String name, final Spawner spawner, final int level) {

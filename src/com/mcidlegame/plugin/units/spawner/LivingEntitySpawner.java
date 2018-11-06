@@ -53,4 +53,9 @@ public class LivingEntitySpawner implements Spawner {
 		return this.entity;
 	}
 
+	@Override
+	public Location getLoacation() {
+		return this.location;
+	}
+
 }
