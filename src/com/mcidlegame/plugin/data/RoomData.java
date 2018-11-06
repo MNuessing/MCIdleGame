@@ -34,13 +34,14 @@ public class RoomData {
 	private final Map<Slot, AllyUnit> allies = new HashMap<>();
 	private final Chunk chunk;
 	private BukkitTask respawn;
+	private static final BlockHandler blockHandler = new BlockHandler(7, 64, 7);
 
 	public static void checkChunk(final Chunk chunk) {
 		if (chunk == null) {
 			return;
 		}
 
-		final Block block = chunk.getBlock(7, 64, 7);
+		final Block block = blockHandler.getBlock(chunk);
 		if (block == null || block.getType() != Material.COMMAND) {
 			return;
 		}
@@ -68,10 +69,10 @@ public class RoomData {
 	}
 
 	private void setup() {
-		final Block targetBlock = this.chunk.getBlock(7, 64, 7);
+		final Block targetBlock = blockHandler.getBlock(this.chunk);
 		final String targetLine = WorldManager.getCommandString(targetBlock);
 		if (!targetLine.equals("")) {
-			final Location targetSpawn = this.chunk.getBlock(7, 66, 7).getLocation().add(0.5, 0, 0.5);
+			final Location targetSpawn = blockHandler.getLocation(this.chunk);
 			this.target = EnemyUnit.fromString(targetLine, targetSpawn, this::onKill);
 		}
 		targetBlock.getRelative(BlockFace.UP).setMetadata(metaString, new FixedMetadataValue(Main.main, this));
@@ -128,7 +129,7 @@ public class RoomData {
 		if (this.respawn != null && !this.respawn.isCancelled()) {
 			this.respawn.cancel();
 		}
-		WorldManager.setCommand(this.chunk.getBlock(7, 64, 7), "");
+		WorldManager.setCommand(blockHandler.getBlock(this.chunk), "");
 		stopShooting();
 		this.target.remove();
 		final ItemStack item = this.target.toItem();
@@ -137,12 +138,12 @@ public class RoomData {
 	}
 
 	public boolean setTarget(final ItemStack item) {
-		final Location targetSpawn = this.chunk.getBlock(7, 66, 7).getLocation().add(0.5, 0, 0.5);
+		final Location targetSpawn = blockHandler.getLocation(this.chunk);
 		final EnemyUnit target = EnemyUnit.fromItem(item, targetSpawn, this::onKill);
 		if (target == null) {
 			return false;
 		}
-		WorldManager.setCommand(this.chunk.getBlock(7, 64, 7), target.toString());
+		WorldManager.setCommand(blockHandler.getBlock(this.chunk), target.toString());
 		this.target = target;
 		this.target.spawn();
 		startShooting();

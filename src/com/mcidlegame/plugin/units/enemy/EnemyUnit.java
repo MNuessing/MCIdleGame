@@ -1,15 +1,14 @@
 package com.mcidlegame.plugin.units.enemy;
 
-import java.util.List;
 import java.util.function.IntUnaryOperator;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -26,6 +25,7 @@ public abstract class EnemyUnit extends Unit {
 	private static final IntUnaryOperator healthGrowth = n -> (int) (10 * Math.pow(1.2, n - 1));
 	private final int maxHealth;
 	private final Runnable deathHandler;
+	private LivingEntity entity;
 	private int health;
 	private BossBar healthbar;
 
@@ -51,7 +51,9 @@ public abstract class EnemyUnit extends Unit {
 
 	@Override
 	protected void onRemove() {
-		removeHealthbar();
+		if (!this.entity.isDead()) {
+			removeHealthbar();
+		}
 	}
 
 	public void hit(final int damage) {
@@ -73,9 +75,6 @@ public abstract class EnemyUnit extends Unit {
 	}
 
 	public void removeHealthbar() {
-		if (this.healthbar == null) {
-			return;
-		}
 		this.healthbar.removeAll();
 	}
 
@@ -95,23 +94,9 @@ public abstract class EnemyUnit extends Unit {
 	}
 
 	public static EnemyUnit fromItem(final ItemStack item, final Location location, final Runnable deathHandler) {
-		if (item == null) {
-			return null;
-		}
-		// this is and "empty" hand
-		if (item.getType() == Material.AIR) {
-			return null;
-		}
 		final ItemMeta meta = item.getItemMeta();
-		if (!meta.hasDisplayName()) {
-			return null;
-		}
 		final String name = meta.getDisplayName();
-		final List<String> lore = meta.getLore();
-		if (lore.isEmpty()) {
-			return null;
-		}
-		final String levelString = lore.get(0);
+		final String levelString = meta.getLore().get(0);
 		final int level = Integer.parseInt(levelString.substring(7, levelString.length()));
 		return createUnit(name, level, location, deathHandler);
 	}

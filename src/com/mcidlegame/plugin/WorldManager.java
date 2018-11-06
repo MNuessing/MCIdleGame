@@ -45,12 +45,12 @@ public class WorldManager {
 				}
 			}
 		}
-		setCommand(chunk.getBlock(7, 64, 7), "locked");
+		setCommand(chunk.getBlock(8, 64, 8), "locked");
 	}
 
 	public static void unlockRoom(final Chunk chunk) {
 		// TODO: do this smart
-		final int[][] walls = { { 1, 7 }, { 7, 1 }, { 13, 7 }, { 7, 13 } };
+		final int[][] walls = { { 1, 7 }, { 7, 4 }, { 10, 7 }, { 7, 10 } };
 		for (final int[] pair : walls) {
 			for (int x = pair[0] - 1; x < pair[0] + 2; x++) {
 				for (int y = 65; y < 68; y++) {
@@ -63,11 +63,11 @@ public class WorldManager {
 				}
 			}
 		}
-		setCommand(chunk.getBlock(7, 64, 7), "");
+		setCommand(chunk.getBlock(8, 64, 8), "");
 	}
 
 	public static boolean hasRoom(final Chunk chunk) {
-		if (chunk.getBlock(7, 64, 7).getType() == Material.AIR) {
+		if (chunk.getBlock(8, 64, 8).getType() == Material.AIR) {
 			return false;
 		}
 		return true;

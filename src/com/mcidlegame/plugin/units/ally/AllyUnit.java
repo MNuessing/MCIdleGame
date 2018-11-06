@@ -1,9 +1,6 @@
 package com.mcidlegame.plugin.units.ally;
 
-import java.util.List;
-
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -29,23 +26,9 @@ public abstract class AllyUnit extends Unit implements Damager {
 	}
 
 	public static AllyUnit fromItem(final ItemStack item, final Location location) {
-		if (item == null) {
-			return null;
-		}
-		// this is and "empty" hand
-		if (item.getType() == Material.AIR) {
-			return null;
-		}
 		final ItemMeta meta = item.getItemMeta();
-		if (!meta.hasDisplayName()) {
-			return null;
-		}
 		final String name = meta.getDisplayName();
-		final List<String> lore = meta.getLore();
-		if (lore.isEmpty()) {
-			return null;
-		}
-		final String levelString = lore.get(0);
+		final String levelString = meta.getLore().get(0);
 		final int level = Integer.parseInt(levelString.substring(7, levelString.length()));
 		return createUnit(name, level, location);
 	}

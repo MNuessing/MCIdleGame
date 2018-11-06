@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.mcidlegame.plugin.data.RoomData;
-import com.mcidlegame.plugin.units.ally.PlayerUnit;
 
 public class Main extends JavaPlugin {
 
@@ -21,13 +20,8 @@ public class Main extends JavaPlugin {
 	public void onEnable() {
 		main = this;
 		Bukkit.getPluginManager().registerEvents(new EventListener(), this);
-		for (final World world : Bukkit.getWorlds()) {
-			for (final Chunk chunk : world.getLoadedChunks()) {
-				RoomData.checkChunk(chunk);
-			}
-		}
-		for (final Player player : Bukkit.getOnlinePlayers()) {
-			PlayerUnit.apply(player);
+		for (final Chunk chunk : Bukkit.getWorld("world").getLoadedChunks()) {
+			RoomData.checkChunk(chunk);
 		}
 	}
 
@@ -36,9 +30,6 @@ public class Main extends JavaPlugin {
 		for (final Entity entity : Bukkit.getWorld("world").getEntities()) {
 			if (!(entity instanceof Player)) {
 				entity.remove();
-			} else {
-				final Player player = (Player) entity;
-				RoomData.getRoom(player.getLocation().getChunk()).leaveRoom(player);
 			}
 		}
 	}
