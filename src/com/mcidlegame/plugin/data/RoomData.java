@@ -76,7 +76,7 @@ public class RoomData {
 		final String targetLine = WorldUtils.getCommandString(targetBlock);
 		if (!targetLine.equals("")) {
 			final Location targetSpawn = blockHandler.getLocation(this.chunk);
-			this.target = EnemyUnit.fromString(targetLine, targetSpawn, this.listeners);
+			this.target = new UnitData(targetLine).toEnemyUnit(targetSpawn, this.listeners);
 		}
 		targetBlock.getRelative(BlockFace.UP).setMetadata(metaString, new FixedMetadataValue(Main.main, this));
 
@@ -84,7 +84,7 @@ public class RoomData {
 			final Block block = slot.getBlock(this.chunk);
 			final String line = WorldUtils.getCommandString(block);
 			if (!line.equals("")) {
-				final AllyUnit ally = AllyUnit.fromString(line, slot.getSpawnLocation(this.chunk), this.listeners);
+				final AllyUnit ally = new UnitData(line).toAllyUnit(slot.getSpawnLocation(this.chunk), this.listeners);
 				this.allies.put(slot, ally);
 				ally.spawn();
 			}
@@ -135,18 +135,19 @@ public class RoomData {
 		WorldUtils.setCommand(blockHandler.getBlock(this.chunk), "");
 		stopShooting();
 		this.target.remove();
-		final ItemStack item = this.target.toItem();
+		final ItemStack item = new UnitData(this.target).toItem();
 		this.target = null;
 		return item;
 	}
 
 	public boolean setTarget(final ItemStack item) {
 		final Location targetSpawn = blockHandler.getLocation(this.chunk);
-		final EnemyUnit target = EnemyUnit.fromItem(item, targetSpawn, this.listeners);
-		if (target == null) {
+		final UnitData data = UnitData.fromItem(item);
+		if (data == null || data.getUnitTeam() != UnitTeam.ENEMY) {
 			return false;
 		}
-		WorldUtils.setCommand(blockHandler.getBlock(this.chunk), target.toString());
+		final EnemyUnit target = data.toEnemyUnit(targetSpawn, this.listeners);
+		WorldUtils.setCommand(blockHandler.getBlock(this.chunk), data.toString());
 		this.target = target;
 		this.target.spawn();
 		startShooting();
@@ -159,15 +160,19 @@ public class RoomData {
 		final AllyUnit ally = this.allies.get(slot);
 		ally.remove();
 		this.allies.remove(slot);
-		return ally.toItem();
+		return new UnitData(ally).toItem();
 	}
 
 	public boolean addAlly(final Slot slot, final ItemStack item) {
-		final AllyUnit ally = AllyUnit.fromItem(item, slot.getSpawnLocation(this.chunk), this.listeners);
+		final UnitData data = UnitData.fromItem(item);
+		if (data == null || data.getUnitTeam() != UnitTeam.ALLY) {
+			return false;
+		}
+		final AllyUnit ally = data.toAllyUnit(slot.getSpawnLocation(this.chunk), this.listeners);
 		if (ally == null) {
 			return false;
 		}
-		WorldUtils.setCommand(slot.getBlock(this.chunk), ally.toString());
+		WorldUtils.setCommand(slot.getBlock(this.chunk), data.toString());
 		this.allies.put(slot, ally);
 		ally.spawn();
 		if (this.target != null && !this.target.isDead() && ally instanceof ShooterUnit) {

@@ -8,6 +8,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
 import com.mcidlegame.plugin.Main;
+import com.mcidlegame.plugin.data.UnitType;
 import com.mcidlegame.plugin.units.spawner.LivingEntitySpawner;
 
 public abstract class ShooterUnit extends AllyUnit implements Damager {
@@ -20,9 +21,9 @@ public abstract class ShooterUnit extends AllyUnit implements Damager {
 	private final Class<? extends Projectile> projectile;
 	private BukkitTask shooting = null;
 
-	public ShooterUnit(final String name, final LivingEntitySpawner spawner, final int level, final long attackrate,
+	public ShooterUnit(final UnitType type, final int level, final LivingEntitySpawner spawner, final long attackrate,
 			final Class<? extends Projectile> projectile, final double damageModifier) {
-		super(name, spawner, level);
+		super(type, level, spawner);
 		this.spawner = spawner;
 		this.attackrate = attackrate;
 		this.projectile = projectile;

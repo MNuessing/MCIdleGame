@@ -4,6 +4,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import com.mcidlegame.plugin.Main;
 import com.mcidlegame.plugin.data.RoomListeners;
+import com.mcidlegame.plugin.data.UnitType;
 import com.mcidlegame.plugin.units.spawner.Spawner;
 
 public abstract class BufferUnit extends AllyUnit {
@@ -12,8 +13,8 @@ public abstract class BufferUnit extends AllyUnit {
 
 	protected final RoomListeners listeners;
 
-	public BufferUnit(final String name, final Spawner spawner, final int level, final RoomListeners listeners) {
-		super(name, spawner, level);
+	public BufferUnit(final UnitType type, final int level, final Spawner spawner, final RoomListeners listeners) {
+		super(type, level, spawner);
 
 		this.listeners = listeners;
 	}

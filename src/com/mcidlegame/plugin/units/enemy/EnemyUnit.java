@@ -1,7 +1,6 @@
 package com.mcidlegame.plugin.units.enemy;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.IntUnaryOperator;
@@ -15,13 +14,13 @@ import org.bukkit.boss.BossBar;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import com.mcidlegame.plugin.ItemUtils;
 import com.mcidlegame.plugin.Main;
 import com.mcidlegame.plugin.WorldUtils;
 import com.mcidlegame.plugin.data.RoomListeners;
+import com.mcidlegame.plugin.data.UnitType;
 import com.mcidlegame.plugin.units.Unit;
 import com.mcidlegame.plugin.units.ally.Damager;
 import com.mcidlegame.plugin.units.events.CalculateLootEvent;
@@ -42,9 +41,9 @@ public abstract class EnemyUnit extends Unit {
 	private int health;
 	private BossBar healthbar;
 
-	public EnemyUnit(final String name, final Spawner spawner, final int level, final double healthModifier,
+	public EnemyUnit(final UnitType type, final int level, final Spawner spawner, final double healthModifier,
 			final RoomListeners listeners) {
-		super(name, spawner, level);
+		super(type, level, spawner);
 		this.dropLocation = spawner.getDropLacation().clone();
 		this.listeners = listeners;
 		this.maxHealth = this.health = (int) (healthGrowth.applyAsInt(level) * healthModifier);
@@ -125,41 +124,5 @@ public abstract class EnemyUnit extends Unit {
 
 	public boolean isDead() {
 		return this.spawner.isDead();
-	}
-
-	public static EnemyUnit fromString(final String line, final Location location, final RoomListeners listeners) {
-		final String[] args = line.split(";");
-		return createUnit(args[0], Integer.parseInt(args[1]), location, listeners);
-	}
-
-	public static EnemyUnit fromItem(final ItemStack item, final Location location, final RoomListeners listeners) {
-		if (item == null) {
-			return null;
-		}
-		// this is an "empty" hand
-		if (item.getType() == Material.AIR) {
-			return null;
-		}
-		final ItemMeta meta = item.getItemMeta();
-		if (!meta.hasDisplayName()) {
-			return null;
-		}
-		final String name = meta.getDisplayName();
-		final List<String> lore = meta.getLore();
-		if (lore.isEmpty()) {
-			return null;
-		}
-		final String levelString = lore.get(0);
-		final int level = Integer.parseInt(levelString.substring(7, levelString.length()));
-		return createUnit(name, level, location, listeners);
-	}
-
-	private static EnemyUnit createUnit(final String name, final int level, final Location location,
-			final RoomListeners listeners) {
-		switch (name) {
-		case "Zombie":
-			return new ZombieUnit(location, level, listeners);
-		}
-		return null;
 	}
 }

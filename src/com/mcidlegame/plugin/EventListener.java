@@ -1,7 +1,5 @@
 package com.mcidlegame.plugin;
 
-import java.util.Collections;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -27,12 +25,13 @@ import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
 
 import com.mcidlegame.plugin.data.RoomData;
+import com.mcidlegame.plugin.data.UnitData;
+import com.mcidlegame.plugin.data.UnitType;
 import com.mcidlegame.plugin.units.ally.Damager;
 import com.mcidlegame.plugin.units.ally.PlayerUnit;
 import com.mcidlegame.plugin.units.enemy.EnemyUnit;
@@ -51,20 +50,9 @@ public class EventListener implements Listener {
 		if (player.getLevel() == 0) {
 			player.setLevel(1);
 
-			final ItemStack spawner = new ItemStack(Material.SKULL_ITEM, 1, (byte) 2);
-			final ItemMeta spawnerMeta = spawner.getItemMeta();
-			spawnerMeta.setDisplayName("Zombie");
-			spawnerMeta.setLore(Collections.singletonList("Level: 1"));
-			spawner.setItemMeta(spawnerMeta);
-
-			final ItemStack ally = new ItemStack(Material.SNOW_BLOCK);
-			final ItemMeta allyMeta = ally.getItemMeta();
-			allyMeta.setDisplayName("Snowman");
-			allyMeta.setLore(Collections.singletonList("Level: 1"));
-			ally.setItemMeta(allyMeta);
-
-			player.getInventory().addItem(spawner);
-			player.getInventory().addItem(ally);
+			final Inventory inventory = player.getInventory();
+			inventory.addItem(new UnitData(UnitType.ZOMBIE, 1).toItem());
+			inventory.addItem(new UnitData(UnitType.SNOWMAN, 1).toItem());
 		}
 
 		PlayerUnit.apply(player);

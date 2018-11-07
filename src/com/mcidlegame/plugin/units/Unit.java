@@ -1,24 +1,21 @@
 package com.mcidlegame.plugin.units;
 
-import java.util.Collections;
-
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.Metadatable;
 
+import com.mcidlegame.plugin.data.UnitType;
 import com.mcidlegame.plugin.units.spawner.Spawner;
 
 public abstract class Unit {
 
-	private final String name;
-	protected final Spawner spawner;
+	private final UnitType type;
 	protected final int level;
+	protected final Spawner spawner;
 	protected Metadatable unit;
 
-	public Unit(final String name, final Spawner spawner, final int level) {
-		this.name = name;
-		this.spawner = spawner;
+	public Unit(final UnitType type, final int level, final Spawner spawner) {
+		this.type = type;
 		this.level = level;
+		this.spawner = spawner;
 	}
 
 	public final void spawn() {
@@ -31,29 +28,13 @@ public abstract class Unit {
 		onRemove();
 	}
 
-	public String getName() {
-		return this.name;
+	public UnitType getUnitType() {
+		return this.type;
 	}
 
 	public int getLevel() {
 		return this.level;
 	}
-
-	@Override
-	public String toString() {
-		return this.name + ";" + this.level;
-	}
-
-	public final ItemStack toItem() {
-		final ItemStack item = getBaseItem();
-		final ItemMeta meta = item.getItemMeta();
-		meta.setDisplayName(this.name);
-		meta.setLore(Collections.singletonList("Level: " + this.level));
-		item.setItemMeta(meta);
-		return item;
-	}
-
-	protected abstract ItemStack getBaseItem();
 
 	protected abstract void onRemove();
 
