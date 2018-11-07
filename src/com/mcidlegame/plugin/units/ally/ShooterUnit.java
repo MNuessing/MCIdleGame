@@ -3,6 +3,7 @@ package com.mcidlegame.plugin.units.ally;
 import java.util.function.IntUnaryOperator;
 
 import org.bukkit.entity.Projectile;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -26,6 +27,11 @@ public abstract class ShooterUnit extends AllyUnit implements Damager {
 		this.attackrate = attackrate;
 		this.projectile = projectile;
 		this.damage = (int) (damageGrowth.applyAsInt(level) * damageModifier);
+	}
+
+	@Override
+	public void onSpawn() {
+		this.unit.setMetadata(metaString, new FixedMetadataValue(Main.main, this));
 	}
 
 	@Override

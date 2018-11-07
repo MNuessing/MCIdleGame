@@ -18,10 +18,11 @@ import org.bukkit.scheduler.BukkitTask;
 
 import com.mcidlegame.plugin.Main;
 import com.mcidlegame.plugin.PlayerUtils;
-import com.mcidlegame.plugin.WorldManager;
+import com.mcidlegame.plugin.WorldUtils;
 import com.mcidlegame.plugin.units.ally.AllyUnit;
 import com.mcidlegame.plugin.units.ally.ShooterUnit;
 import com.mcidlegame.plugin.units.enemy.EnemyUnit;
+import com.mcidlegame.plugin.units.events.EnemyUnitDeathEvent;
 
 public class RoomData {
 
@@ -32,6 +33,7 @@ public class RoomData {
 
 	private EnemyUnit target = null;
 	private final Map<Slot, AllyUnit> allies = new HashMap<>();
+	private final RoomListeners listeners = new RoomListeners();
 	private final Chunk chunk;
 	private BukkitTask respawn;
 	private static final BlockHandler blockHandler = new BlockHandler();
@@ -46,7 +48,7 @@ public class RoomData {
 			return;
 		}
 
-		if (WorldManager.getCommandString(block).equals("locked")) {
+		if (WorldUtils.getCommandString(block).equals("locked")) {
 			return;
 		}
 
@@ -64,24 +66,25 @@ public class RoomData {
 	private RoomData(final Chunk chunk) {
 		this.chunk = chunk;
 		rooms.put(chunk, this);
+		this.listeners.registerEnemyUnitDeathListener(null, this::onDeath);
 
 		setup();
 	}
 
 	private void setup() {
 		final Block targetBlock = blockHandler.getBlock(this.chunk);
-		final String targetLine = WorldManager.getCommandString(targetBlock);
+		final String targetLine = WorldUtils.getCommandString(targetBlock);
 		if (!targetLine.equals("")) {
 			final Location targetSpawn = blockHandler.getLocation(this.chunk);
-			this.target = EnemyUnit.fromString(targetLine, targetSpawn, this::onKill);
+			this.target = EnemyUnit.fromString(targetLine, targetSpawn, this.listeners);
 		}
 		targetBlock.getRelative(BlockFace.UP).setMetadata(metaString, new FixedMetadataValue(Main.main, this));
 
 		for (final Slot slot : Slot.values()) {
 			final Block block = slot.getBlock(this.chunk);
-			final String line = WorldManager.getCommandString(block);
+			final String line = WorldUtils.getCommandString(block);
 			if (!line.equals("")) {
-				final AllyUnit ally = AllyUnit.fromString(line, slot.getSpawnLocation(this.chunk));
+				final AllyUnit ally = AllyUnit.fromString(line, slot.getSpawnLocation(this.chunk), this.listeners);
 				this.allies.put(slot, ally);
 				ally.spawn();
 			}
@@ -95,7 +98,7 @@ public class RoomData {
 		}
 	}
 
-	public void onKill() {
+	private void onDeath(final EnemyUnitDeathEvent event) {
 		stopShooting();
 
 		this.respawn = new BukkitRunnable() {
@@ -129,7 +132,7 @@ public class RoomData {
 		if (this.respawn != null && !this.respawn.isCancelled()) {
 			this.respawn.cancel();
 		}
-		WorldManager.setCommand(blockHandler.getBlock(this.chunk), "");
+		WorldUtils.setCommand(blockHandler.getBlock(this.chunk), "");
 		stopShooting();
 		this.target.remove();
 		final ItemStack item = this.target.toItem();
@@ -139,11 +142,11 @@ public class RoomData {
 
 	public boolean setTarget(final ItemStack item) {
 		final Location targetSpawn = blockHandler.getLocation(this.chunk);
-		final EnemyUnit target = EnemyUnit.fromItem(item, targetSpawn, this::onKill);
+		final EnemyUnit target = EnemyUnit.fromItem(item, targetSpawn, this.listeners);
 		if (target == null) {
 			return false;
 		}
-		WorldManager.setCommand(blockHandler.getBlock(this.chunk), target.toString());
+		WorldUtils.setCommand(blockHandler.getBlock(this.chunk), target.toString());
 		this.target = target;
 		this.target.spawn();
 		startShooting();
@@ -152,7 +155,7 @@ public class RoomData {
 	}
 
 	public ItemStack removeAlly(final Slot slot) {
-		WorldManager.setCommand(slot.getBlock(this.chunk), "");
+		WorldUtils.setCommand(slot.getBlock(this.chunk), "");
 		final AllyUnit ally = this.allies.get(slot);
 		ally.remove();
 		this.allies.remove(slot);
@@ -160,11 +163,11 @@ public class RoomData {
 	}
 
 	public boolean addAlly(final Slot slot, final ItemStack item) {
-		final AllyUnit ally = AllyUnit.fromItem(item, slot.getSpawnLocation(this.chunk));
+		final AllyUnit ally = AllyUnit.fromItem(item, slot.getSpawnLocation(this.chunk), this.listeners);
 		if (ally == null) {
 			return false;
 		}
-		WorldManager.setCommand(slot.getBlock(this.chunk), ally.toString());
+		WorldUtils.setCommand(slot.getBlock(this.chunk), ally.toString());
 		this.allies.put(slot, ally);
 		ally.spawn();
 		if (this.target != null && !this.target.isDead() && ally instanceof ShooterUnit) {

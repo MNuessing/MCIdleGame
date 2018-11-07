@@ -45,7 +45,7 @@ public class EventListener implements Listener {
 		player.sendMessage(ChatColor.GREEN + "Welcome.");
 		player.setGameMode(GameMode.ADVENTURE);
 		player.setCollidable(false);
-		WorldManager.enterWorld(player, Bukkit.getWorld("world"));
+		WorldUtils.enterWorld(player, Bukkit.getWorld("world"));
 
 		// TODO: maybe do this differently, maybe not
 		if (player.getLevel() == 0) {
@@ -96,7 +96,7 @@ public class EventListener implements Listener {
 			return;
 		}
 
-		enemy.hit(damager.getDamage());
+		enemy.hit(damager);
 	}
 
 	private Entity getDamager(final EntityDamageByEntityEvent event) {
@@ -197,7 +197,7 @@ public class EventListener implements Listener {
 		if (event.getPlayer().getInventory().getItemInMainHand().getType() != Material.JACK_O_LANTERN) {
 			return;
 		}
-		WorldManager.addRoom(block.getChunk());
+		WorldUtils.addRoom(block.getChunk());
 		PlayerUtils.decreaseItem(event.getPlayer());
 	}
 

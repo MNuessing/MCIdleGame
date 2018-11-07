@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.mcidlegame.plugin.data.BlockHandler;
 
-public class WorldManager {
+public class WorldUtils {
 
 	private static final BlockHandler commandBlock = new BlockHandler();
 
@@ -104,6 +104,13 @@ public class WorldManager {
 			loc.getWorld().dropItem(loc, new ItemStack(material, 64));
 		}
 		loc.getWorld().dropItem(loc, new ItemStack(material, amount % 64));
+	}
+
+	public static void dropItems(final Location location, final ItemStack[] items) {
+		final World world = location.getWorld();
+		for (final ItemStack item : items) {
+			world.dropItem(location, item);
+		}
 	}
 
 }

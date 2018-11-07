@@ -4,6 +4,7 @@ import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.Metadatable;
 
 public class LivingEntitySpawner implements Spawner {
@@ -11,6 +12,7 @@ public class LivingEntitySpawner implements Spawner {
 	private final String name;
 	private final Location location;
 	private final EntityType type;
+	private ItemStack[] armorContents = {};
 	private LivingEntity entity;
 
 	public LivingEntitySpawner(final String name, final Location location, final EntityType type) {
@@ -23,10 +25,19 @@ public class LivingEntitySpawner implements Spawner {
 	public Metadatable spawn() {
 		this.entity = (LivingEntity) this.location.getWorld().spawnEntity(this.location, this.type);
 		this.entity.getEquipment().clear();
+		this.entity.getEquipment().setArmorContents(this.armorContents);
 		this.entity.setAI(false);
 		this.entity.setCustomName(this.name);
 		this.entity.setCustomNameVisible(true);
 		return this.entity;
+	}
+
+	public LivingEntity getEntity() {
+		return this.entity;
+	}
+
+	public void setArmorContents(final ItemStack[] armorContents) {
+		this.armorContents = armorContents;
 	}
 
 	@Override
@@ -56,12 +67,8 @@ public class LivingEntitySpawner implements Spawner {
 		return this.location.getChunk();
 	}
 
-	public LivingEntity getEntity() {
-		return this.entity;
-	}
-
 	@Override
-	public Location getLoacation() {
+	public Location getDropLacation() {
 		return this.location;
 	}
 

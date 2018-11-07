@@ -18,9 +18,16 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import com.mcidlegame.plugin.ItemUtils;
 import com.mcidlegame.plugin.Main;
-import com.mcidlegame.plugin.WorldManager;
+import com.mcidlegame.plugin.WorldUtils;
+import com.mcidlegame.plugin.data.RoomListeners;
 import com.mcidlegame.plugin.units.Unit;
+import com.mcidlegame.plugin.units.ally.Damager;
+import com.mcidlegame.plugin.units.events.CalculateLootEvent;
+import com.mcidlegame.plugin.units.events.DropLootEvent;
+import com.mcidlegame.plugin.units.events.EnemyUnitDamagedByDamagerEvent;
+import com.mcidlegame.plugin.units.events.EnemyUnitDeathEvent;
 import com.mcidlegame.plugin.units.spawner.Spawner;
 
 public abstract class EnemyUnit extends Unit {
@@ -30,14 +37,16 @@ public abstract class EnemyUnit extends Unit {
 	private static final IntUnaryOperator healthGrowth = n -> (int) (10 * Math.pow(1.2, n - 1));
 	protected static final Map<Material, Double> lootMap = new HashMap<>();
 	private final int maxHealth;
-	private final Runnable deathHandler;
+	private final Location dropLocation;
+	private final RoomListeners listeners;
 	private int health;
 	private BossBar healthbar;
 
 	public EnemyUnit(final String name, final Spawner spawner, final int level, final double healthModifier,
-			final Runnable deathHandler) {
+			final RoomListeners listeners) {
 		super(name, spawner, level);
-		this.deathHandler = deathHandler;
+		this.dropLocation = spawner.getDropLacation().clone();
+		this.listeners = listeners;
 		this.maxHealth = this.health = (int) (healthGrowth.applyAsInt(level) * healthModifier);
 		this.healthbar = Bukkit.createBossBar("Health: " + this.health, BarColor.RED, BarStyle.SEGMENTED_10);
 
@@ -63,8 +72,11 @@ public abstract class EnemyUnit extends Unit {
 		removeHealthbar();
 	}
 
-	public void hit(final int damage) {
-		this.health -= damage;
+	public void hit(final Damager damager) {
+		final EnemyUnitDamagedByDamagerEvent event = new EnemyUnitDamagedByDamagerEvent(this, damager,
+				damager.getDamage());
+		this.listeners.listen(event);
+		this.health -= event.getDamage();
 		if (this.health > 0) {
 			this.healthbar.setTitle("Health: " + this.health);
 			this.healthbar.setProgress((1.0 / this.maxHealth) * this.health);
@@ -89,35 +101,42 @@ public abstract class EnemyUnit extends Unit {
 	}
 
 	private void die() {
+		this.listeners.listen(new EnemyUnitDeathEvent(this));
 		this.spawner.kill();
 		for (final Entry<Material, Double> entry : lootMap.entrySet()) {
-			final double dropChance = entry.getValue() * Math.pow(0.25, this.level - 1);
-			int fixAmount = (int) dropChance;
+			final Material type = entry.getKey();
+			double dropChance = entry.getValue() * Math.pow(0.25, this.level - 1);
+			final CalculateLootEvent calculateEvent = new CalculateLootEvent(this, type, dropChance);
+			this.listeners.listen(calculateEvent);
+			dropChance = calculateEvent.getDropChance();
 
+			int fixAmount = (int) dropChance;
 			if ((dropChance - fixAmount) > Math.random()) {
 				fixAmount++;
 			}
 
-			WorldManager.dropItems(this.spawner.getLoacation(), fixAmount, entry.getKey());
+			final ItemStack[] loot = ItemUtils.splitIntoStacks(type, fixAmount);
+			final DropLootEvent dropEvent = new DropLootEvent(this, loot);
+			this.listeners.listen(dropEvent);
+			WorldUtils.dropItems(this.dropLocation, loot);
 		}
 		removeHealthbar();
-		this.deathHandler.run();
 	}
 
 	public boolean isDead() {
 		return this.spawner.isDead();
 	}
 
-	public static EnemyUnit fromString(final String line, final Location location, final Runnable deathHandler) {
+	public static EnemyUnit fromString(final String line, final Location location, final RoomListeners listeners) {
 		final String[] args = line.split(";");
-		return createUnit(args[0], Integer.parseInt(args[1]), location, deathHandler);
+		return createUnit(args[0], Integer.parseInt(args[1]), location, listeners);
 	}
 
-	public static EnemyUnit fromItem(final ItemStack item, final Location location, final Runnable deathHandler) {
+	public static EnemyUnit fromItem(final ItemStack item, final Location location, final RoomListeners listeners) {
 		if (item == null) {
 			return null;
 		}
-		// this is and "empty" hand
+		// this is an "empty" hand
 		if (item.getType() == Material.AIR) {
 			return null;
 		}
@@ -132,14 +151,14 @@ public abstract class EnemyUnit extends Unit {
 		}
 		final String levelString = lore.get(0);
 		final int level = Integer.parseInt(levelString.substring(7, levelString.length()));
-		return createUnit(name, level, location, deathHandler);
+		return createUnit(name, level, location, listeners);
 	}
 
 	private static EnemyUnit createUnit(final String name, final int level, final Location location,
-			final Runnable deathHandler) {
+			final RoomListeners listeners) {
 		switch (name) {
 		case "Zombie":
-			return new ZombieUnit(location, level, deathHandler);
+			return new ZombieUnit(location, level, listeners);
 		}
 		return null;
 	}
