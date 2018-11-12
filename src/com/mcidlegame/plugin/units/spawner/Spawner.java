@@ -18,5 +18,5 @@ public interface Spawner {
 
 	Location getDropLacation();
 
-	void updateName(String name);
+	void setLevel(int level);
 }

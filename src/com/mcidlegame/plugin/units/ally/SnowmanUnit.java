@@ -10,8 +10,8 @@ import com.mcidlegame.plugin.units.spawner.LivingEntitySpawner;
 public class SnowmanUnit extends ShooterUnit {
 
 	public SnowmanUnit(final int level, final Location location) {
-		super(UnitType.SNOWMAN, level, new LivingEntitySpawner("Snowman level " + level, location, EntityType.SNOWMAN),
-				20L, Snowball.class, 1.0);
+		super(UnitType.SNOWMAN, level, new LivingEntitySpawner("Snowman", level, location, EntityType.SNOWMAN), 20L,
+				Snowball.class, 1.0);
 	}
 
 }

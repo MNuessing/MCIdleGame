@@ -11,8 +11,8 @@ import com.mcidlegame.plugin.units.spawner.LivingEntitySpawner;
 public class ZombieUnit extends EnemyUnit {
 
 	public ZombieUnit(final int level, final Location location, final RoomListeners listeners) {
-		super(UnitType.ZOMBIE, level, new LivingEntitySpawner("Zombie level " + level, location, EntityType.ZOMBIE),
-				1.0, listeners);
+		super(UnitType.ZOMBIE, level, new LivingEntitySpawner("Zombie", level, location, EntityType.ZOMBIE), 1.0,
+				listeners);
 	}
 
 	@Override

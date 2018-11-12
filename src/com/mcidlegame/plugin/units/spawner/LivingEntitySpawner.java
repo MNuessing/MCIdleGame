@@ -10,13 +10,15 @@ import org.bukkit.metadata.Metadatable;
 public class LivingEntitySpawner implements Spawner {
 
 	private final String name;
+	private int level;
 	private final Location location;
 	private final EntityType type;
 	private ItemStack[] armorContents = {};
 	private LivingEntity entity;
 
-	public LivingEntitySpawner(final String name, final Location location, final EntityType type) {
+	public LivingEntitySpawner(final String name, final int level, final Location location, final EntityType type) {
 		this.name = name;
+		this.level = level;
 		this.location = location;
 		this.type = type;
 	}
@@ -27,7 +29,7 @@ public class LivingEntitySpawner implements Spawner {
 		this.entity.getEquipment().clear();
 		this.entity.getEquipment().setArmorContents(this.armorContents);
 		this.entity.setAI(false);
-		this.entity.setCustomName(this.name);
+		this.entity.setCustomName(this.name + " level: " + this.level);
 		this.entity.setCustomNameVisible(true);
 		return this.entity;
 	}
@@ -73,9 +75,10 @@ public class LivingEntitySpawner implements Spawner {
 	}
 
 	@Override
-	public void updateName(final String name) {
+	public void setLevel(final int level) {
+		this.level = level;
 		if (this.entity != null && !this.entity.isDead()) {
-			this.entity.setCustomName(name);
+			this.entity.setCustomName(this.name + " level: " + level);
 		}
 	}
 

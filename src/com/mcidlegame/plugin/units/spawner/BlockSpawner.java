@@ -9,6 +9,7 @@ import org.bukkit.metadata.Metadatable;
 public class BlockSpawner implements Spawner {
 
 	private final String name;
+	private int level;
 	private final Block block;
 	private final Material type;
 
@@ -53,7 +54,8 @@ public class BlockSpawner implements Spawner {
 	}
 
 	@Override
-	public void updateName(final String name) {
+	public void setLevel(final int level) {
+		this.level = level;
 		// TODO: update name
 	}
 
