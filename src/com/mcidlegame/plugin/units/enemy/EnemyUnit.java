@@ -3,6 +3,7 @@ package com.mcidlegame.plugin.units.enemy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.DoubleBinaryOperator;
 import java.util.function.IntUnaryOperator;
 
 import org.bukkit.Bukkit;
@@ -34,6 +35,7 @@ public abstract class EnemyUnit extends Unit {
 	public static final String metaString = "enemyUnit";
 	// TODO: find an appropriate growth value
 	private static final IntUnaryOperator healthGrowth = n -> (int) (10 * Math.pow(1.2, n - 1));
+	private static final DoubleBinaryOperator lootGrowth = (n, m) -> n * Math.pow(1.25, m - 1);
 	protected static final Map<Material, Double> lootMap = new HashMap<>();
 	private final int maxHealth;
 	private final Location dropLocation;
@@ -104,7 +106,7 @@ public abstract class EnemyUnit extends Unit {
 		this.spawner.kill();
 		for (final Entry<Material, Double> entry : lootMap.entrySet()) {
 			final Material type = entry.getKey();
-			double dropChance = entry.getValue() * Math.pow(0.25, this.level - 1);
+			double dropChance = lootGrowth.applyAsDouble(entry.getValue(), this.level);
 			final CalculateLootEvent calculateEvent = new CalculateLootEvent(this, type, dropChance);
 			this.listeners.listen(calculateEvent);
 			dropChance = calculateEvent.getDropChance();

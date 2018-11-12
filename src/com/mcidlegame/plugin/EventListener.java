@@ -18,6 +18,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -196,6 +197,11 @@ public class EventListener implements Listener {
 			}
 		}
 		return null;
+	}
+
+	@EventHandler
+	public void onDrop(final PlayerDropItemEvent event) {
+		event.setCancelled(true);
 	}
 
 }
