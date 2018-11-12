@@ -52,4 +52,9 @@ public class BlockSpawner implements Spawner {
 		return this.block.getLocation().add(0.5, 0, 0.5);
 	}
 
+	@Override
+	public void updateName(final String name) {
+		// TODO: update name
+	}
+
 }

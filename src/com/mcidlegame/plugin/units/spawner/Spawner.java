@@ -17,4 +17,6 @@ public interface Spawner {
 	Chunk getChunk();
 
 	Location getDropLacation();
+
+	void updateName(String name);
 }

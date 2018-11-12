@@ -72,4 +72,11 @@ public class LivingEntitySpawner implements Spawner {
 		return this.location;
 	}
 
+	@Override
+	public void updateName(final String name) {
+		if (this.entity != null && !this.entity.isDead()) {
+			this.entity.setCustomName(name);
+		}
+	}
+
 }
