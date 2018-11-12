@@ -8,7 +8,7 @@ import com.mcidlegame.plugin.units.spawner.Spawner;
 public abstract class Unit {
 
 	private final UnitType type;
-	protected final int level;
+	protected int level;
 	protected final Spawner spawner;
 	protected Metadatable unit;
 
@@ -36,8 +36,15 @@ public abstract class Unit {
 		return this.level;
 	}
 
+	public void upgradeLevel() {
+		this.level++;
+		this.spawner.setLevel(this.level);
+		onUpgrade();
+	}
+
 	protected abstract void onRemove();
 
 	protected abstract void onSpawn();
 
+	protected abstract void onUpgrade();
 }

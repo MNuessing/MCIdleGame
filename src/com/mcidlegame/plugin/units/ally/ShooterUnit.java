@@ -16,14 +16,16 @@ public abstract class ShooterUnit extends AllyUnit implements Damager {
 	// TODO: find an appropriate growth value
 	private static final IntUnaryOperator damageGrowth = n -> n;
 	final LivingEntitySpawner spawner;
-	private final int damage;
+	private int damage;
 	private final long attackrate;
 	private final Class<? extends Projectile> projectile;
 	private BukkitTask shooting = null;
+	private final double damageModifier;
 
 	public ShooterUnit(final UnitType type, final int level, final LivingEntitySpawner spawner, final long attackrate,
 			final Class<? extends Projectile> projectile, final double damageModifier) {
 		super(type, level, spawner);
+		this.damageModifier = damageModifier;
 		this.spawner = spawner;
 		this.attackrate = attackrate;
 		this.projectile = projectile;
@@ -64,4 +66,8 @@ public abstract class ShooterUnit extends AllyUnit implements Damager {
 		return this.damage;
 	}
 
+	@Override
+	protected void onUpgrade() {
+		this.damage = (int) (damageGrowth.applyAsInt(this.level) * this.damageModifier);
+	}
 }

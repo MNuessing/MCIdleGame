@@ -37,15 +37,17 @@ public abstract class EnemyUnit extends Unit {
 	private static final IntUnaryOperator healthGrowth = n -> (int) (10 * Math.pow(1.2, n - 1));
 	private static final DoubleBinaryOperator lootGrowth = (n, m) -> n * Math.pow(1.25, m - 1);
 	protected static final Map<Material, Double> lootMap = new HashMap<>();
-	private final int maxHealth;
+	private int maxHealth;
 	private final Location dropLocation;
 	private final RoomListeners listeners;
 	private int health;
 	private BossBar healthbar;
+	private final double healthModifier;
 
 	public EnemyUnit(final UnitType type, final int level, final Spawner spawner, final double healthModifier,
 			final RoomListeners listeners) {
 		super(type, level, spawner);
+		this.healthModifier = healthModifier;
 		this.dropLocation = spawner.getDropLacation().clone();
 		this.listeners = listeners;
 		this.maxHealth = this.health = (int) (healthGrowth.applyAsInt(level) * healthModifier);
@@ -126,5 +128,10 @@ public abstract class EnemyUnit extends Unit {
 
 	public boolean isDead() {
 		return this.spawner.isDead();
+	}
+
+	@Override
+	protected void onUpgrade() {
+		this.maxHealth = this.health = (int) (healthGrowth.applyAsInt(this.level) * this.healthModifier);
 	}
 }
