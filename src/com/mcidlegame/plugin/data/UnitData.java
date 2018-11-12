@@ -6,6 +6,8 @@ import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mcidlegame.plugin.ItemUtils;
 import com.mcidlegame.plugin.units.Unit;
 import com.mcidlegame.plugin.units.ally.AllyUnit;
@@ -39,18 +41,20 @@ public class UnitData {
 		return new UnitData(type, level);
 	}
 
+	public static UnitData fromString(final String arg) {
+		final JsonParser parser = new JsonParser();
+		final JsonObject jsonObject = parser.parse(arg).getAsJsonObject();
+		final UnitType type = UnitType.valueOf(jsonObject.get("type").getAsString());
+		final int level = Integer.parseInt(jsonObject.get("level").getAsString());
+		return new UnitData(type, level);
+	}
+
 	private final UnitType type;
 	private final int level;
 
 	public UnitData(final UnitType type, final int level) {
 		this.type = type;
 		this.level = level;
-	}
-
-	public UnitData(final String arg) {
-		final String[] args = arg.split(";");
-		this.type = UnitType.valueOf(args[0]);
-		this.level = Integer.parseInt(args[1]);
 	}
 
 	public UnitData(final Unit unit) {
@@ -64,7 +68,7 @@ public class UnitData {
 
 	@Override
 	public String toString() {
-		return this.type + ";" + this.level;
+		return "{ type: \"" + this.type + "\"; level: \"" + this.level + "\"}";
 	}
 
 	public ItemStack toItem() {

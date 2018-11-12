@@ -76,7 +76,7 @@ public class RoomData {
 		final String targetLine = WorldUtils.getCommandString(targetBlock);
 		if (!targetLine.equals("")) {
 			final Location targetSpawn = blockHandler.getLocation(this.chunk);
-			this.target = new UnitData(targetLine).toEnemyUnit(targetSpawn, this.listeners);
+			this.target = UnitData.fromString(targetLine).toEnemyUnit(targetSpawn, this.listeners);
 		}
 		targetBlock.getRelative(BlockFace.UP).setMetadata(metaString, new FixedMetadataValue(Main.main, this));
 
@@ -84,7 +84,8 @@ public class RoomData {
 			final Block block = slot.getBlock(this.chunk);
 			final String line = WorldUtils.getCommandString(block);
 			if (!line.equals("")) {
-				final AllyUnit ally = new UnitData(line).toAllyUnit(slot.getSpawnLocation(this.chunk), this.listeners);
+				final AllyUnit ally = UnitData.fromString(line).toAllyUnit(slot.getSpawnLocation(this.chunk),
+						this.listeners);
 				this.allies.put(slot, ally);
 				ally.spawn();
 			}
