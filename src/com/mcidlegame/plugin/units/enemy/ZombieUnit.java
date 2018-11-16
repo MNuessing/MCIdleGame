@@ -6,6 +6,7 @@ import org.bukkit.entity.EntityType;
 
 import com.mcidlegame.plugin.data.RoomListeners;
 import com.mcidlegame.plugin.data.UnitType;
+import com.mcidlegame.plugin.units.UpgradeCost;
 import com.mcidlegame.plugin.units.spawner.LivingEntitySpawner;
 
 public class ZombieUnit extends EnemyUnit {
@@ -18,6 +19,14 @@ public class ZombieUnit extends EnemyUnit {
 	@Override
 	protected void initLootMap() {
 		lootMap.put(Material.GOLD_NUGGET, 0.4);
+	}
+
+	@Override
+	protected void setUpgradeCost() {
+		this.upgradeCost = new UpgradeCost();
+		this.upgradeCost.addUpgradeCost(Material.GOLD_NUGGET, (level) -> {
+			return 10 * Math.pow(1.5, level);
+		});
 	}
 
 }

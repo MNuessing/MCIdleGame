@@ -1,5 +1,8 @@
 package com.mcidlegame.plugin.units;
 
+import java.util.Map;
+
+import org.bukkit.Material;
 import org.bukkit.metadata.Metadatable;
 
 import com.mcidlegame.plugin.data.UnitType;
@@ -11,11 +14,13 @@ public abstract class Unit {
 	protected int level;
 	protected final Spawner spawner;
 	protected Metadatable unit;
+	protected UpgradeCost upgradeCost;
 
 	public Unit(final UnitType type, final int level, final Spawner spawner) {
 		this.type = type;
 		this.level = level;
 		this.spawner = spawner;
+		setUpgradeCost();
 	}
 
 	public final void spawn() {
@@ -41,6 +46,12 @@ public abstract class Unit {
 		this.spawner.setLevel(this.level);
 		onUpgrade();
 	}
+
+	public Map<Material, Integer> getUpgradeCost() {
+		return this.upgradeCost.getUpgradeCosts(this.level);
+	}
+
+	protected abstract void setUpgradeCost();
 
 	protected abstract void onRemove();
 
