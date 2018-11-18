@@ -7,7 +7,8 @@ import com.mcidlegame.plugin.ItemUtils;
 
 public enum UnitType {
 	SNOWMAN("Snowman", UnitTeam.ALLY, Material.SNOW_BLOCK, (byte) 0, "Snowman Shooter"),
-	ZOMBIE("Zombie", UnitTeam.ENEMY, Material.SKULL_ITEM, (byte) 2, "Zombie Spawner");
+	ZOMBIE("Zombie", UnitTeam.ENEMY, Material.SKULL_ITEM, (byte) 2, "Zombie Spawner"),
+	LOOT_CHEST("Loot Chest", UnitTeam.ALLY, Material.CHEST, (byte) 0, "Loot Chest");
 
 	private final String name;
 	private final UnitTeam team;

@@ -59,4 +59,8 @@ public class BlockSpawner implements Spawner {
 		// TODO: update name
 	}
 
+	public Block getBlock() {
+		return this.block;
+	}
+
 }
