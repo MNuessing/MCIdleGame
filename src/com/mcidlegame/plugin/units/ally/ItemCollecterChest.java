@@ -51,7 +51,6 @@ public class ItemCollecterChest extends BufferUnit {
 
 	@Override
 	protected void onUpgrade() {
-		this.level++;
 		this.inventory.clear(this.level);
 	}
 
