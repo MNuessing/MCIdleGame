@@ -11,6 +11,7 @@ import com.google.gson.JsonParser;
 import com.mcidlegame.plugin.ItemUtils;
 import com.mcidlegame.plugin.units.Unit;
 import com.mcidlegame.plugin.units.ally.AllyUnit;
+import com.mcidlegame.plugin.units.ally.ItemCollectorChest;
 import com.mcidlegame.plugin.units.ally.SnowmanUnit;
 import com.mcidlegame.plugin.units.enemy.EnemyUnit;
 import com.mcidlegame.plugin.units.enemy.ZombieUnit;
@@ -94,6 +95,8 @@ public class UnitData {
 		switch (this.type) {
 		case SNOWMAN:
 			return new SnowmanUnit(this.level, location);
+		case LOOT_CHEST:
+			return new ItemCollectorChest(this.level, location, listeners);
 		default:
 			throw new IllegalStateException("UnitData was not convertable to ally.");
 		}

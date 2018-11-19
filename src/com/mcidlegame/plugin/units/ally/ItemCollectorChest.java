@@ -2,6 +2,7 @@ package com.mcidlegame.plugin.units.ally;
 
 import java.util.HashMap;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -15,7 +16,6 @@ import com.mcidlegame.plugin.data.UnitType;
 import com.mcidlegame.plugin.units.UpgradeCost;
 import com.mcidlegame.plugin.units.events.DropLootEvent;
 import com.mcidlegame.plugin.units.spawner.BlockSpawner;
-import com.mcidlegame.plugin.units.spawner.Spawner;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -23,9 +23,8 @@ public class ItemCollectorChest extends BufferUnit {
 	private Inventory inventory;
 	private final int chestMaxSize = 26;
 
-	public ItemCollectorChest(final UnitType type, final int level, final Spawner spawner,
-			final RoomListeners listeners) {
-		super(UnitType.LOOT_CHEST, level, spawner, listeners);
+	public ItemCollectorChest(final int level, final Location loc, final RoomListeners listeners) {
+		super(UnitType.LOOT_CHEST, level, new BlockSpawner("Loot Chest", level, loc, Material.CHEST), listeners);
 	}
 
 	@Override

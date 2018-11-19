@@ -13,8 +13,9 @@ public class BlockSpawner implements Spawner {
 	private final Block block;
 	private final Material type;
 
-	public BlockSpawner(final String name, final Location loc, final Material type) {
+	public BlockSpawner(final String name, final int level, final Location loc, final Material type) {
 		this.name = name;
+		this.level = level;
 		this.block = loc.getBlock();
 		this.type = type;
 	}
