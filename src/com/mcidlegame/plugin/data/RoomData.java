@@ -223,7 +223,9 @@ public class RoomData {
 
 	private void interactAlly(final Player player, final Slot slot) {
 		if (this.allies.containsKey(slot)) {
-			addItem(player, removeAlly(slot));
+			if (this.allies.get(slot).isRemoveable()) {
+				addItem(player, removeAlly(slot));
+			}
 		} else if (addAlly(slot, player.getInventory().getItemInMainHand())) {
 			PlayerUtils.decreaseItem(player);
 		}

@@ -51,6 +51,10 @@ public abstract class Unit {
 		return this.upgradeCost.getUpgradeCosts(this.level);
 	}
 
+	public boolean isRemoveable() {
+		return true;
+	}
+
 	protected abstract void setUpgradeCost();
 
 	protected abstract void onRemove();

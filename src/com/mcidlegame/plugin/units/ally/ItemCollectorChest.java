@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -16,18 +17,20 @@ import com.mcidlegame.plugin.units.events.DropLootEvent;
 import com.mcidlegame.plugin.units.spawner.BlockSpawner;
 import com.mcidlegame.plugin.units.spawner.Spawner;
 
-public class ItemCollecterChest extends BufferUnit {
+import net.md_5.bungee.api.ChatColor;
+
+public class ItemCollectorChest extends BufferUnit {
 	private Inventory inventory;
 	private final int chestMaxSize = 26;
 
-	public ItemCollecterChest(final UnitType type, final int level, final Spawner spawner,
+	public ItemCollectorChest(final UnitType type, final int level, final Spawner spawner,
 			final RoomListeners listeners) {
 		super(UnitType.LOOT_CHEST, level, spawner, listeners);
 	}
 
 	@Override
 	protected void initListeners() {
-		this.listeners.registerDropLootListener(this, (event) -> onLootDrop(event));
+		this.listeners.registerDropLootListener(this, this::onLootDrop);
 	}
 
 	private void onLootDrop(final DropLootEvent event) {
@@ -39,6 +42,22 @@ public class ItemCollecterChest extends BufferUnit {
 		final HashMap<Integer, ItemStack> notInsertedItems = this.inventory.addItem(items);
 
 		event.setItems(notInsertedItems.values().toArray(new ItemStack[notInsertedItems.values().size()]));
+	}
+
+	@Override
+	public boolean isRemoveable() {
+		for (final ItemStack item : this.inventory) {
+			final Material type = item.getType();
+			switch (type) {
+			case AIR:
+				continue;
+			case BARRIER:
+				return true;
+			default:
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
@@ -64,9 +83,10 @@ public class ItemCollecterChest extends BufferUnit {
 
 	private void addBarrierToChest() {
 		final ItemStack barrier = new ItemStack(Material.BARRIER);
-		ItemUtils.setName(barrier, "LOCKED");
+		ItemUtils.setName(barrier, ChatColor.RED + "LOCKED");
 		for (int index = this.level; index < this.chestMaxSize; index++) {
-			this.inventory.setItem(index, barrier);
+			this.inventory.setItem(index, ItemUtils.setLore(barrier,
+					ChatColor.GRAY + "Unlock level " + (index + 1) + " to access this slot."));
 		}
 	}
 
@@ -75,10 +95,11 @@ public class ItemCollecterChest extends BufferUnit {
 		if (block == null || block.getType() != Material.CHEST) {
 			return;
 		}
-		if (block.getState() != null || !(block.getState() instanceof Chest)) {
+		final BlockState state = block.getState();
+		if (state == null || !(state instanceof Chest)) {
 			return;
 		}
-		final Chest chest = (Chest) block.getState();
+		final Chest chest = (Chest) state;
 		this.inventory = chest.getBlockInventory();
 	}
 }
