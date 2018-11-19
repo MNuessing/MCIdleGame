@@ -18,6 +18,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -27,6 +28,7 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.projectiles.ProjectileSource;
 
@@ -202,6 +204,14 @@ public class EventListener implements Listener {
 	@EventHandler
 	public void onDrop(final PlayerDropItemEvent event) {
 		event.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onClick(final InventoryClickEvent event) {
+		final ItemStack item = event.getCurrentItem();
+		if (item != null && item.getType() == Material.BARRIER) {
+			event.setCancelled(true);
+		}
 	}
 
 }
