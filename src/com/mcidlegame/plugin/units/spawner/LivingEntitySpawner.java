@@ -71,7 +71,7 @@ public class LivingEntitySpawner implements Spawner {
 
 	@Override
 	public Location getDropLacation() {
-		return this.location;
+		return this.location.clone();
 	}
 
 	@Override
