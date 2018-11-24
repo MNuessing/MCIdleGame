@@ -9,6 +9,5 @@
 	<classpathentry kind="lib" path="spigot-1.12.2.jar" sourcepath="spigot-1.12.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="lib" path="InventoryWrapper.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Makus/eclipse-workspace/MCIdleGame/InventoryWrapper.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
