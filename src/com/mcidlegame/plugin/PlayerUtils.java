@@ -43,8 +43,9 @@ public class PlayerUtils {
 			if (amount == null || (intAmount = amount.intValue()) == 0) {
 				continue;
 			}
-			final int stackAmount = Math.min(intAmount, item.getAmount());
-			payment.put(item, stackAmount);
+			final int itemAmount = item.getAmount();
+			final int stackAmount = Math.min(intAmount, itemAmount);
+			payment.put(item, itemAmount - stackAmount);
 			removed.put(type, intAmount - stackAmount);
 		}
 
