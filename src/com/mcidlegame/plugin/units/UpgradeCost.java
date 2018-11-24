@@ -14,12 +14,12 @@ public class UpgradeCost {
 	}
 
 	public boolean addUpgradeCost(final Material material, final UpgradeHandler upgradeHandler) {
-		if (this.upgradeCost.containsValue(material)) {
+		if (this.upgradeCost.containsKey(material)) {
 			return false;
 		}
 		this.upgradeCost.put(material, upgradeHandler);
 
-		if (this.upgradeCost.containsValue(material)) {
+		if (this.upgradeCost.containsKey(material)) {
 			return true;
 		}
 		return false;
