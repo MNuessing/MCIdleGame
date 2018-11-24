@@ -48,7 +48,7 @@ public abstract class EnemyUnit extends Unit {
 			final RoomListeners listeners) {
 		super(type, level, spawner);
 		this.healthModifier = healthModifier;
-		this.dropLocation = spawner.getDropLacation().clone();
+		this.dropLocation = spawner.getDropLocation().clone();
 		this.listeners = listeners;
 		this.maxHealth = this.health = (int) (healthGrowth.applyAsInt(level) * healthModifier);
 		this.healthbar = Bukkit.createBossBar("Health: " + this.health, BarColor.RED, BarStyle.SEGMENTED_10);

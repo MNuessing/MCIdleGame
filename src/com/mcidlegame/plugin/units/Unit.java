@@ -3,10 +3,13 @@ package com.mcidlegame.plugin.units;
 import java.util.Map;
 
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.Metadatable;
 
 import com.mcidlegame.plugin.PlayerUtils;
+import com.mcidlegame.plugin.WorldUtils;
+import com.mcidlegame.plugin.data.UnitData;
 import com.mcidlegame.plugin.data.UnitType;
 import com.mcidlegame.plugin.units.menus.UnitMenu;
 import com.mcidlegame.plugin.units.spawner.Spawner;
@@ -72,6 +75,8 @@ public abstract class Unit {
 	private void upgrade(final Player player) {
 		if (PlayerUtils.removeItems(player, getUpgradeCost())) {
 			upgradeLevel();
+			final Block commandBlock = this.spawner.getDropLocation().subtract(0, 2, 0).getBlock();
+			WorldUtils.setCommand(commandBlock, (new UnitData(this)).toString());
 		}
 	}
 

@@ -16,7 +16,7 @@ public interface Spawner {
 
 	Chunk getChunk();
 
-	Location getDropLacation();
+	Location getDropLocation();
 
 	void setLevel(int level);
 }

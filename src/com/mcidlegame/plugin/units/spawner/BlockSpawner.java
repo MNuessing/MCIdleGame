@@ -50,7 +50,7 @@ public class BlockSpawner implements Spawner {
 	}
 
 	@Override
-	public Location getDropLacation() {
+	public Location getDropLocation() {
 		return this.block.getLocation().add(0.5, 0, 0.5);
 	}
 
