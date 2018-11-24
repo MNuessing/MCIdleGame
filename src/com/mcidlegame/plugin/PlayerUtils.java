@@ -33,6 +33,10 @@ public class PlayerUtils {
 		final Map<ItemStack, Integer> payment = new HashMap<>();
 
 		for (final ItemStack item : inventory.getContents()) {
+			if (item == null) {
+				continue;
+			}
+
 			final Material type = item.getType();
 			final Integer amount = removed.get(type);
 			int intAmount;

@@ -43,7 +43,7 @@ public abstract class Unit {
 	}
 
 	public final void openMenu(final Player player) {
-		this.openMenu(player);
+		this.menu.openToPlayer(player);
 	}
 
 	public UnitType getUnitType() {
