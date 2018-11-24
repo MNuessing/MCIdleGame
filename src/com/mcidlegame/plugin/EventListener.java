@@ -170,16 +170,21 @@ public class EventListener implements Listener {
 
 	@EventHandler
 	public void onInteract(final PlayerInteractEvent event) {
-		if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+		final Action action = event.getAction();
+		if (action != Action.RIGHT_CLICK_BLOCK && action != Action.LEFT_CLICK_BLOCK) {
 			return;
 		}
-		if (event.getHand() != EquipmentSlot.OFF_HAND) {
+		if (event.getHand() != EquipmentSlot.HAND) {
 			return;
 		}
 		final Block block = event.getClickedBlock();
 		final RoomData data = getRoomData(block);
 		if (data != null) {
-			data.interact(event.getPlayer(), block);
+			if (action == Action.RIGHT_CLICK_BLOCK) {
+				data.interactRight(event.getPlayer(), block);
+			} else {
+				data.interactLeft(event.getPlayer(), block);
+			}
 			return;
 		}
 		if (block.getType() != Material.JACK_O_LANTERN) {

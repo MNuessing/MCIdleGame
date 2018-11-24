@@ -6,7 +6,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Snowball;
 
 import com.mcidlegame.plugin.data.UnitType;
-import com.mcidlegame.plugin.units.UpgradeCost;
 import com.mcidlegame.plugin.units.spawner.LivingEntitySpawner;
 
 public class SnowmanUnit extends ShooterUnit {
@@ -17,8 +16,7 @@ public class SnowmanUnit extends ShooterUnit {
 	}
 
 	@Override
-	protected void setUpgradeCost() {
-		this.upgradeCost = new UpgradeCost();
+	protected void initUpgradeCost() {
 		this.upgradeCost.addUpgradeCost(Material.GOLD_NUGGET, (level) -> {
 			return 10 * Math.pow(1.5, level);
 		});

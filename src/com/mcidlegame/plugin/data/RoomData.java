@@ -195,12 +195,26 @@ public class RoomData {
 		}
 	}
 
-	public void interact(final Player player, final Block block) {
+	public void interactRight(final Player player, final Block block) {
 		final Slot slot = getSlot(block);
 		if (slot == null) {
 			interactTarget(player);
 		} else {
 			interactAlly(player, slot);
+		}
+	}
+
+	public void interactLeft(final Player player, final Block block) {
+		final Slot slot = getSlot(block);
+		if (slot == null) {
+			if (this.target != null) {
+				this.target.openMenu(player);
+			}
+		} else {
+			final AllyUnit ally = this.allies.get(slot);
+			if (ally != null) {
+				ally.openMenu(player);
+			}
 		}
 	}
 

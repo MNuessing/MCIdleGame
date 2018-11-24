@@ -13,7 +13,6 @@ import org.bukkit.inventory.ItemStack;
 import com.mcidlegame.plugin.ItemUtils;
 import com.mcidlegame.plugin.data.RoomListeners;
 import com.mcidlegame.plugin.data.UnitType;
-import com.mcidlegame.plugin.units.UpgradeCost;
 import com.mcidlegame.plugin.units.events.DropLootEvent;
 import com.mcidlegame.plugin.units.spawner.BlockSpawner;
 
@@ -60,8 +59,7 @@ public class ItemCollectorChest extends BufferUnit {
 	}
 
 	@Override
-	protected void setUpgradeCost() {
-		this.upgradeCost = new UpgradeCost();
+	protected void initUpgradeCost() {
 		this.upgradeCost.addUpgradeCost(Material.GOLD_NUGGET, (level) -> {
 			return 10 * Math.pow(1.5, level);
 		});
