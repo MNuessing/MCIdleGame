@@ -5,5 +5,5 @@
 *.log
 
 # Jar file
-*.jar
+spigot-1.12.2.jar
 /bin/
