@@ -22,7 +22,7 @@ import net.md_5.bungee.api.ChatColor;
 
 public class ItemCollectorChest extends BufferUnit {
 	private Inventory inventory;
-	private final int chestMaxSize = 26;
+	private final int chestMaxSize = 27;
 
 	public ItemCollectorChest(final int level, final Location loc, final Consumer<Player> remove,
 			final RoomListeners listeners) {
@@ -71,7 +71,7 @@ public class ItemCollectorChest extends BufferUnit {
 
 	@Override
 	protected void onUpgrade() {
-		this.inventory.clear(this.level);
+		this.inventory.clear(this.level - 1);
 	}
 
 	@Override
