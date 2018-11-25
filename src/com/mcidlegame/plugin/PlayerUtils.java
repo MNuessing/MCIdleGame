@@ -1,6 +1,6 @@
 package com.mcidlegame.plugin;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -30,7 +30,7 @@ public class PlayerUtils {
 	 */
 	public static boolean removeItems(final Player player, final Map<Material, Integer> removed) {
 		final Inventory inventory = player.getInventory();
-		final Map<ItemStack, Integer> payment = new HashMap<>();
+		final Map<ItemStack, Integer> payment = new IdentityHashMap<>();
 
 		for (final ItemStack item : inventory.getContents()) {
 			if (item == null) {
