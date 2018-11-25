@@ -191,8 +191,11 @@ public class EventListener implements Listener {
 		if (event.getPlayer().getInventory().getItemInMainHand().getType() != Material.JACK_O_LANTERN) {
 			return;
 		}
-		WorldUtils.addRoom(block.getChunk());
+		final byte faceDirection = block.getData();
+		block.setType(Material.PUMPKIN);
+		block.setData(faceDirection);
 		PlayerUtils.decreaseItem(event.getPlayer());
+		WorldUtils.addRoom(block.getChunk());
 	}
 
 	private RoomData getRoomData(final Block block) {

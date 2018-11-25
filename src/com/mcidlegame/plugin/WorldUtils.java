@@ -9,6 +9,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.mcidlegame.plugin.data.BlockHandler;
 
@@ -23,12 +24,18 @@ public class WorldUtils {
 		final Chunk east = world.getChunkAt(chunk.getX(), chunk.getZ() + 1);
 		final Chunk west = world.getChunkAt(chunk.getX(), chunk.getZ() - 1);
 		final Chunk[] relatives = { north, south, east, west };
-		for (final Chunk relative : relatives) {
-			if (!hasRoom(relative)) {
-				createRoom(relative);
+
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				for (final Chunk relative : relatives) {
+					if (!hasRoom(relative)) {
+						createRoom(relative);
+					}
+				}
+				unlockRoom(chunk);
 			}
-		}
-		unlockRoom(chunk);
+		}.runTaskLater(Main.main, 0L);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -61,7 +68,8 @@ public class WorldUtils {
 				for (int y = 65; y < 68; y++) {
 					for (int z = pair[1] - 1; z < pair[1] + 2; z++) {
 						final Block block = chunk.getBlock(x, y, z);
-						if (block.getType() == Material.WOOL || block.getType() == Material.JACK_O_LANTERN) {
+						if (block.getType() == Material.WOOL || block.getType() == Material.JACK_O_LANTERN
+								|| block.getType() == Material.PUMPKIN) {
 							block.setType(Material.AIR);
 						}
 					}
