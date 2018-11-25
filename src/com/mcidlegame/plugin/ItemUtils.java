@@ -1,10 +1,15 @@
 package com.mcidlegame.plugin;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -67,4 +72,12 @@ public class ItemUtils {
 		return items;
 	}
 
+	public static List<String> getLore(final Map<Material, Integer> costs) {
+		final List<String> lore = new ArrayList<>(costs.size());
+		for (final Entry<Material, Integer> cost : costs.entrySet()) {
+			lore.add(ChatColor.GRAY + CraftItemStack.asNMSCopy(new ItemStack(cost.getKey())).getName() + ": "
+					+ cost.getValue());
+		}
+		return lore;
+	}
 }

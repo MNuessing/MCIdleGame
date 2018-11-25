@@ -1,14 +1,38 @@
 package com.mcidlegame.plugin.data;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import com.mcidlegame.plugin.ItemUtils;
 
 public enum UnitType {
-	SNOWMAN("Snowman", UnitTeam.ALLY, Material.SNOW_BLOCK, (byte) 0, "Snowman Shooter"),
-	ZOMBIE("Zombie", UnitTeam.ENEMY, Material.SKULL_ITEM, (byte) 2, "Zombie Spawner"),
-	LOOT_CHEST("Loot Chest", UnitTeam.ALLY, Material.CHEST, (byte) 0, "Loot Chest");
+	SNOWMAN("Snowman", UnitTeam.ALLY, Material.SNOW_BLOCK, (byte) 0, "Snowman Shooter") {
+		@Override
+		public Map<Material, Integer> getBaseCost() {
+			final Map<Material, Integer> baseCost = new HashMap<>();
+			baseCost.put(Material.GOLD_NUGGET, 1000);
+			return baseCost;
+		}
+	},
+	ZOMBIE("Zombie", UnitTeam.ENEMY, Material.SKULL_ITEM, (byte) 2, "Zombie Spawner") {
+		@Override
+		public Map<Material, Integer> getBaseCost() {
+			final Map<Material, Integer> baseCost = new HashMap<>();
+			baseCost.put(Material.GOLD_NUGGET, 1000);
+			return baseCost;
+		}
+	},
+	LOOT_CHEST("Loot Chest", UnitTeam.ALLY, Material.CHEST, (byte) 0, "Loot Chest") {
+		@Override
+		public Map<Material, Integer> getBaseCost() {
+			final Map<Material, Integer> baseCost = new HashMap<>();
+			baseCost.put(Material.GOLD_NUGGET, 1000);
+			return baseCost;
+		}
+	};
 
 	private final String name;
 	private final UnitTeam team;
@@ -44,5 +68,11 @@ public enum UnitType {
 			}
 		}
 		return null;
+	}
+
+	public abstract Map<Material, Integer> getBaseCost();
+
+	public Material getBaseType() {
+		return this.type;
 	}
 }

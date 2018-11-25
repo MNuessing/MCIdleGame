@@ -1,20 +1,17 @@
 package com.mcidlegame.plugin.units.menus;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.Consumer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.mcidlegame.plugin.ItemUtils;
+import com.mcidlegame.plugin.units.UpgradeCost;
 import com.skitskurr.inventorywrapper.InventoryWrapper;
 
 public class UnitMenu extends InventoryWrapper {
@@ -35,14 +32,8 @@ public class UnitMenu extends InventoryWrapper {
 
 	public void setUpgradeLevel(final int level, final Map<Material, Integer> upgradeCost,
 			final Consumer<Player> upgrade) {
-		final List<String> lore = new ArrayList<>(upgradeCost.size());
-		for (final Entry<Material, Integer> cost : upgradeCost.entrySet()) {
-			lore.add(ChatColor.GRAY + CraftItemStack.asNMSCopy(new ItemStack(cost.getKey())).getName() + ": "
-					+ cost.getValue());
-		}
-
 		final ItemStack levelUp = new ItemStack(Material.SIGN);
-		ItemUtils.setNameAndLore(levelUp, "Upgrade to level " + level, lore);
+		UpgradeCost.setUpgradeLevel(level, levelUp, upgradeCost);
 
 		this.inventory.setItem(13, levelUp);
 

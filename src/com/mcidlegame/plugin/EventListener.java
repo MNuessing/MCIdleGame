@@ -37,6 +37,7 @@ import org.bukkit.projectiles.ProjectileSource;
 import com.mcidlegame.plugin.data.RoomData;
 import com.mcidlegame.plugin.data.UnitData;
 import com.mcidlegame.plugin.data.UnitType;
+import com.mcidlegame.plugin.menu.CraftingBenchMenuWrapper;
 import com.mcidlegame.plugin.units.ally.Damager;
 import com.mcidlegame.plugin.units.ally.PlayerUnit;
 import com.mcidlegame.plugin.units.enemy.EnemyUnit;
@@ -178,6 +179,14 @@ public class EventListener implements Listener {
 		}
 
 		if (event.getHand() != EquipmentSlot.OFF_HAND) {
+			if (event.getHand() == EquipmentSlot.HAND) {
+				final Block block = event.getClickedBlock();
+				if (block.getType() == Material.WORKBENCH) {
+					CraftingBenchMenuWrapper.openMenu(event.getPlayer());
+					event.setCancelled(true);
+					return;
+				}
+			}
 			return;
 		}
 
