@@ -76,7 +76,7 @@ public class RoomData {
 		final String targetLine = WorldUtils.getCommandString(targetBlock);
 		if (!targetLine.equals("")) {
 			final Location targetSpawn = blockHandler.getLocation(this.chunk);
-			this.target = UnitData.fromString(targetLine).toEnemyUnit(targetSpawn, this.listeners);
+			this.target = UnitData.fromString(targetLine).toEnemyUnit(targetSpawn, this::removeTarget, this.listeners);
 		}
 		targetBlock.getRelative(BlockFace.UP).setMetadata(metaString, new FixedMetadataValue(Main.main, this));
 
@@ -85,7 +85,7 @@ public class RoomData {
 			final String line = WorldUtils.getCommandString(block);
 			if (!line.equals("")) {
 				final AllyUnit ally = UnitData.fromString(line).toAllyUnit(slot.getSpawnLocation(this.chunk),
-						this.listeners);
+						player -> removeAlly(player, slot), this.listeners);
 				this.allies.put(slot, ally);
 				ally.spawn();
 			}
@@ -129,7 +129,9 @@ public class RoomData {
 		}
 	}
 
-	public ItemStack removeTarget() {
+	public void removeTarget(final Player player) {
+		this.target.closeAllMenus();
+
 		if (this.respawn != null && !this.respawn.isCancelled()) {
 			this.respawn.cancel();
 		}
@@ -138,7 +140,8 @@ public class RoomData {
 		this.target.remove();
 		final ItemStack item = new UnitData(this.target).toItem();
 		this.target = null;
-		return item;
+
+		addItem(player, item);
 	}
 
 	public boolean setTarget(final ItemStack item) {
@@ -147,7 +150,7 @@ public class RoomData {
 		if (data == null || data.getUnitTeam() != UnitTeam.ENEMY) {
 			return false;
 		}
-		final EnemyUnit target = data.toEnemyUnit(targetSpawn, this.listeners);
+		final EnemyUnit target = data.toEnemyUnit(targetSpawn, this::removeTarget, this.listeners);
 		WorldUtils.setCommand(blockHandler.getBlock(this.chunk), data.toString());
 		this.target = target;
 		this.target.spawn();
@@ -156,12 +159,17 @@ public class RoomData {
 		return true;
 	}
 
-	public ItemStack removeAlly(final Slot slot) {
-		WorldUtils.setCommand(slot.getBlock(this.chunk), "");
+	public void removeAlly(final Player player, final Slot slot) {
 		final AllyUnit ally = this.allies.get(slot);
+		if (!ally.isRemoveable()) {
+			return;
+		}
+		ally.closeAllMenus();
+		WorldUtils.setCommand(slot.getBlock(this.chunk), "");
 		ally.remove();
 		this.allies.remove(slot);
-		return new UnitData(ally).toItem();
+
+		addItem(player, new UnitData(ally).toItem());
 	}
 
 	public boolean addAlly(final Slot slot, final ItemStack item) {
@@ -169,7 +177,8 @@ public class RoomData {
 		if (data == null || data.getUnitTeam() != UnitTeam.ALLY) {
 			return false;
 		}
-		final AllyUnit ally = data.toAllyUnit(slot.getSpawnLocation(this.chunk), this.listeners);
+		final AllyUnit ally = data.toAllyUnit(slot.getSpawnLocation(this.chunk), player -> removeAlly(player, slot),
+				this.listeners);
 		if (ally == null) {
 			return false;
 		}
@@ -195,26 +204,12 @@ public class RoomData {
 		}
 	}
 
-	public void interactRight(final Player player, final Block block) {
+	public void interact(final Player player, final Block block) {
 		final Slot slot = getSlot(block);
 		if (slot == null) {
 			interactTarget(player);
 		} else {
 			interactAlly(player, slot);
-		}
-	}
-
-	public void interactLeft(final Player player, final Block block) {
-		final Slot slot = getSlot(block);
-		if (slot == null) {
-			if (this.target != null) {
-				this.target.openMenu(player);
-			}
-		} else {
-			final AllyUnit ally = this.allies.get(slot);
-			if (ally != null) {
-				ally.openMenu(player);
-			}
 		}
 	}
 
@@ -229,7 +224,7 @@ public class RoomData {
 
 	private void interactTarget(final Player player) {
 		if (this.target != null) {
-			addItem(player, removeTarget());
+			this.target.openMenu(player);
 		} else if (setTarget(player.getInventory().getItemInMainHand())) {
 			PlayerUtils.decreaseItem(player);
 		}
@@ -237,9 +232,7 @@ public class RoomData {
 
 	private void interactAlly(final Player player, final Slot slot) {
 		if (this.allies.containsKey(slot)) {
-			if (this.allies.get(slot).isRemoveable()) {
-				addItem(player, removeAlly(slot));
-			}
+			this.allies.get(slot).openMenu(player);
 		} else if (addAlly(slot, player.getInventory().getItemInMainHand())) {
 			PlayerUtils.decreaseItem(player);
 		}

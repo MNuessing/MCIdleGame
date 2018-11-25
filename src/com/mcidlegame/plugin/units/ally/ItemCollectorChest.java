@@ -1,12 +1,14 @@
 package com.mcidlegame.plugin.units.ally;
 
 import java.util.HashMap;
+import java.util.function.Consumer;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -22,8 +24,10 @@ public class ItemCollectorChest extends BufferUnit {
 	private Inventory inventory;
 	private final int chestMaxSize = 26;
 
-	public ItemCollectorChest(final int level, final Location loc, final RoomListeners listeners) {
-		super(UnitType.LOOT_CHEST, level, new BlockSpawner("Loot Chest", level, loc, Material.CHEST), listeners);
+	public ItemCollectorChest(final int level, final Location loc, final Consumer<Player> remove,
+			final RoomListeners listeners) {
+		super(UnitType.LOOT_CHEST, level, new BlockSpawner("Loot Chest", level, loc, Material.CHEST), remove,
+				listeners);
 	}
 
 	@Override

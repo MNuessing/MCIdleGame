@@ -3,6 +3,7 @@ package com.mcidlegame.plugin.units.enemy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
 import java.util.function.DoubleBinaryOperator;
 import java.util.function.IntUnaryOperator;
 
@@ -44,9 +45,9 @@ public abstract class EnemyUnit extends Unit {
 	private BossBar healthbar;
 	private final double healthModifier;
 
-	public EnemyUnit(final UnitType type, final int level, final Spawner spawner, final double healthModifier,
-			final RoomListeners listeners) {
-		super(type, level, spawner);
+	public EnemyUnit(final UnitType type, final int level, final Spawner spawner, final Consumer<Player> remove,
+			final double healthModifier, final RoomListeners listeners) {
+		super(type, level, spawner, remove);
 		this.healthModifier = healthModifier;
 		this.dropLocation = spawner.getDropLocation().clone();
 		this.listeners = listeners;

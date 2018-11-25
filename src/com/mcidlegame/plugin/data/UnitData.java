@@ -1,8 +1,10 @@
 package com.mcidlegame.plugin.data;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -76,27 +78,28 @@ public class UnitData {
 		return ItemUtils.setLore(this.type.getBaseItem(), "§7Level: " + this.level);
 	}
 
-	public EnemyUnit toEnemyUnit(final Location location, final RoomListeners listeners) {
+	public EnemyUnit toEnemyUnit(final Location location, final Consumer<Player> remove,
+			final RoomListeners listeners) {
 		if (this.type.getUnitTeam() != UnitTeam.ENEMY) {
 			throw new IllegalStateException("Unit is not an enemy.");
 		}
 		switch (this.type) {
 		case ZOMBIE:
-			return new ZombieUnit(this.level, location, listeners);
+			return new ZombieUnit(this.level, location, remove, listeners);
 		default:
 			throw new IllegalStateException("UnitData was not convertable to enemy.");
 		}
 	}
 
-	public AllyUnit toAllyUnit(final Location location, final RoomListeners listeners) {
+	public AllyUnit toAllyUnit(final Location location, final Consumer<Player> remove, final RoomListeners listeners) {
 		if (this.type.getUnitTeam() != UnitTeam.ALLY) {
 			throw new IllegalStateException("Unit is not an ally.");
 		}
 		switch (this.type) {
 		case SNOWMAN:
-			return new SnowmanUnit(this.level, location);
+			return new SnowmanUnit(this.level, location, remove);
 		case LOOT_CHEST:
-			return new ItemCollectorChest(this.level, location, listeners);
+			return new ItemCollectorChest(this.level, location, remove, listeners);
 		default:
 			throw new IllegalStateException("UnitData was not convertable to ally.");
 		}

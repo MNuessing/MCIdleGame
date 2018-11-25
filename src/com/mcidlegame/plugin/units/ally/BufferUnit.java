@@ -1,5 +1,8 @@
 package com.mcidlegame.plugin.units.ally;
 
+import java.util.function.Consumer;
+
+import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import com.mcidlegame.plugin.Main;
@@ -13,8 +16,9 @@ public abstract class BufferUnit extends AllyUnit {
 
 	protected final RoomListeners listeners;
 
-	public BufferUnit(final UnitType type, final int level, final Spawner spawner, final RoomListeners listeners) {
-		super(type, level, spawner);
+	public BufferUnit(final UnitType type, final int level, final Spawner spawner, final Consumer<Player> remove,
+			final RoomListeners listeners) {
+		super(type, level, spawner, remove);
 
 		this.listeners = listeners;
 	}

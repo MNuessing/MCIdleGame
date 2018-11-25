@@ -1,6 +1,7 @@
 package com.mcidlegame.plugin.units;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -23,7 +24,7 @@ public abstract class Unit {
 	protected final UpgradeCost upgradeCost;
 	private final UnitMenu menu;
 
-	public Unit(final UnitType type, final int level, final Spawner spawner) {
+	public Unit(final UnitType type, final int level, final Spawner spawner, final Consumer<Player> remove) {
 		this.type = type;
 		this.level = level;
 		this.spawner = spawner;
@@ -31,7 +32,7 @@ public abstract class Unit {
 		this.upgradeCost = new UpgradeCost();
 		initUpgradeCost();
 
-		this.menu = new UnitMenu(type.name());
+		this.menu = new UnitMenu(type.name(), remove);
 		setUpgradeLevel();
 	}
 
@@ -47,6 +48,10 @@ public abstract class Unit {
 
 	public final void openMenu(final Player player) {
 		this.menu.openToPlayer(player);
+	}
+
+	public final void closeAllMenus() {
+		this.menu.closeAll();
 	}
 
 	public UnitType getUnitType() {

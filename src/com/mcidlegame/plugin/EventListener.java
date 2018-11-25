@@ -182,7 +182,7 @@ public class EventListener implements Listener {
 		final Block block = event.getClickedBlock();
 		final RoomData data = getRoomData(block);
 		if (data != null) {
-			data.interactLeft(event.getPlayer(), block);
+			data.interact(event.getPlayer(), block);
 			return;
 		}
 		if (block.getType() != Material.JACK_O_LANTERN) {
