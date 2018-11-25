@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.mcidlegame.plugin.ItemUtils;
 import com.mcidlegame.plugin.units.UpgradeCost;
+import com.skitskurr.inventorywrapper.ClickEvent;
 import com.skitskurr.inventorywrapper.InventoryWrapper;
 
 public class UnitMenu extends InventoryWrapper {
@@ -46,11 +47,12 @@ public class UnitMenu extends InventoryWrapper {
 	}
 
 	@Override
-	protected void clicked(final Player player, final ItemStack item, final int position) {
-		if (position == 13 && this.upgrade != null) {
-			this.upgrade.accept(player);
-		} else if (position == 16) {
-			this.remove.accept(player);
+	protected void clicked(final ClickEvent event) {
+		final int slot = event.getSlot();
+		if (slot == 13 && this.upgrade != null) {
+			this.upgrade.accept(event.getPlayer());
+		} else if (slot == 16) {
+			this.remove.accept(event.getPlayer());
 		}
 	}
 
